@@ -1,0 +1,16 @@
+{
+  "name": "vue-xclass",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite playground/vue3-test",
+    "build":"vite build core"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^4.1.0"
+  }
+}
