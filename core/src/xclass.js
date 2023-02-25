@@ -16,7 +16,7 @@ const xclassUtil = {
 
     },
     init(){
-        let cacheKey = xclassUtil.title + '_' + version;
+        let cacheKey = xclassUtil.title + '_' + xclassUtil.version;
         if(xclassUtil.isClearCache){
             removeStorages(new RegExp(`${xclassUtil.title}_.*`))
         }else{
