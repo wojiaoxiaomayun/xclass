@@ -1,20 +1,21 @@
 const xclassUtil = {
     title:'XCLASS',
     version:'1.0.0',
-    isClearCache:true,
+    isClearCache:false,
     expire:-1,
     pseudoClassDefine:{
         'hover:':':hover'
     },
     debug:false,
-    debugMap:{},
-    debugResultMap:{},
-    observeMap:{},
-    styleMap:{},
+    debugMap:new Map(),
+    debugResultMap:new Map(),
+    observeMap:new Map(),
+    interSectionObserver:null,
+    styleMap:new Map(),
     styleSheet:null,
     styleCache:{
-
     },
+    elBindingMap:new Map(),
     init(){
         let cacheKey = xclassUtil.title + '_' + xclassUtil.version;
         if(xclassUtil.isClearCache){
@@ -23,7 +24,7 @@ const xclassUtil = {
             removeStorages(new RegExp(`${xclassUtil.title}_.*`),[cacheKey])
         }
         let cache = getStorage(cacheKey) || {}
-        xclassUtil.debugResultMap = {}
+        xclassUtil.debugResultMap = new Map()
         xclassUtil.styleCache = new Proxy(cache,{
             get(target,key){
                 return target[key]
@@ -50,41 +51,56 @@ const xclassUtil = {
                 xclassUtil.styleSheet = sheet;
             }
         }
+        //加入视窗监视器，来保证进入视窗的元素才被渲染，大大降低了js使用率，成功避免渲染10000及更多节点卡死问题
+        xclassUtil.interSectionObserver = new IntersectionObserver(xclassUtil.intersectionCallback,{
+            rootMargin:'500px 0px'
+        })
+    },
+    intersectionCallback(entries){
+        entries.forEach(entry => {
+            let el = entry.target
+            let _uid = el.getAttribute('uid')
+            if(entry.isIntersecting){
+                let _uid = `${xclassUtil.title}-${guid()}`;
+                let attr = document.createAttribute('uid');
+                attr.nodeValue = _uid
+                el.attributes.setNamedItem(attr)
+                // el.classList.add(xclassUtil.class);
+                xclassUtil.handleDebug(xclassUtil.elBindingMap.get(el),el)
+                let startTime = new Date().getTime();
+                let styles = xclassUtil.parseStyle(el)
+                xclassUtil.createStyles(styles,el)
+                if(xclassUtil.debug){
+                    console.log('生成时间',_uid,new Date().getTime() - startTime)
+                }
+                var observerOptions = {
+                    childList: false,  // 观察目标子节点的变化，是否有添加或者删除
+                    attributes: true, // 观察属性变动
+                    subtree: false     // 观察后代节点，默认为 false
+                }
+                let observer = new MutationObserver(function(mutationList){
+                    let startTime1 = new Date().getTime();
+                    let styles = xclassUtil.parseStyle(el)
+                    xclassUtil.createStyles(styles,el)
+                    if(xclassUtil.debug){
+                        console.log('生成时间-',_uid,new Date().getTime() - startTime1)
+                    }
+                });
+                observer.observe(el, observerOptions);
+                xclassUtil.observeMap.set(attr.nodeValue,observer)
+                xclassUtil.interSectionObserver.unobserve(el)
+            }
+        })
     },
     bind(el,binding){
-        let _uid = `${xclassUtil.title}-${guid()}`;
-        let attr = document.createAttribute('uid');
-        attr.nodeValue = _uid
-        el.attributes.setNamedItem(attr)
-        // el.classList.add(xclassUtil.class);
-        xclassUtil.handleDebug(binding,el)
-        let startTime = new Date().getTime();
-        let styles = xclassUtil.parseStyle(el)
-        xclassUtil.createStyles(styles,el)
-        if(xclassUtil.debug){
-            console.log('生成时间',_uid,new Date().getTime() - startTime)
-        }
-        var observerOptions = {
-            childList: false,  // 观察目标子节点的变化，是否有添加或者删除
-            attributes: true, // 观察属性变动
-            subtree: false     // 观察后代节点，默认为 false
-        }
-        let observer = new MutationObserver(function(mutationList){
-            let startTime1 = new Date().getTime();
-            let styles = xclassUtil.parseStyle(el)
-            xclassUtil.createStyles(styles,el)
-            if(xclassUtil.debug){
-                console.log('生成时间-',_uid,new Date().getTime() - startTime1)
-            }
-        });
-        observer.observe(el, observerOptions);
-        xclassUtil.observeMap[attr.nodeValue] = observer
+        xclassUtil.interSectionObserver.observe(el)
+        xclassUtil.elBindingMap.set(el,binding)
     },
     unbind(el){
         let _uid = el.getAttribute('uid')
-        if(xclassUtil.observeMap[_uid]){
-            xclassUtil.observeMap[_uid].disconnect();
-            delete xclassUtil.observeMap[_uid]
+        if(xclassUtil.observeMap.get(_uid)){
+            xclassUtil.observeMap.get(_uid).disconnect();
+            xclassUtil.observeMap.delete(_uid)
         }
     },
     parseVersion(el){
@@ -110,13 +126,13 @@ const xclassUtil = {
             attrNames.push(attrs[i].nodeName)
         }
         let _uid = el.getAttribute('uid')
-        let arr = xclassUtil.styleMap[_uid]
+        let arr = xclassUtil.styleMap.get(_uid)
         if(arr && arr.length == attrNames.length){
             if(arr.filter(e => !attrNames.includes(e)).length == 0){
                 return {}
             }
         }
-        xclassUtil.styleMap[_uid] = attrNames.map(e => e)
+        xclassUtil.styleMap.set(_uid,attrNames.map(e => e))
         let result = {}
         let allStyleCache = attrNames.map((name,index) => {
             let cache = xclassUtil.styleCache[name]
@@ -137,6 +153,9 @@ const xclassUtil = {
         //排除有缓存的key
         attrNames = attrNames.filter(e => e)
         Object.keys(xclassUtil.pseudoClassDefine).forEach(pseudoClassDefineKey => {
+            if(!result[xclassUtil.pseudoClassDefine[pseudoClassDefineKey]]){
+                result[xclassUtil.pseudoClassDefine[pseudoClassDefineKey]] = []
+            }
             let pseudoClassDefineStyles = attrNames.filter((name,index) => {
                 let status = name.startsWith(pseudoClassDefineKey);
                 if(status){
@@ -175,7 +194,7 @@ const xclassUtil = {
                     return style;
                 })
             }).flat(Infinity)
-            result[pseudoClassDefineKey] = pseudoClassDefineStyles
+            result[xclassUtil.pseudoClassDefine[pseudoClassDefineKey]].push(...pseudoClassDefineStyles)
         })
         // 再次排除
         attrNames = attrNames.filter(e => e);
@@ -198,7 +217,7 @@ const xclassUtil = {
             })
             return styles
         }).flat(Infinity)
-        result['allStyles'] = allStyleCache.concat(allStyles);
+        result[''] = allStyleCache.concat(allStyles);
         return result;
     },
     createStyle(styles,el,pseudoClassDefineStr = ''){
@@ -247,7 +266,7 @@ const xclassUtil = {
         if(styles){
             Object.keys(styles).forEach(key => {
                 try{
-                    xclassUtil.createStyle(styles[key],el,xclassUtil.pseudoClassDefine[key] || '')
+                    xclassUtil.createStyle(styles[key],el,key || '')
                 }catch(ex){
                     console.error(ex)
                 }
@@ -297,24 +316,24 @@ const xclassUtil = {
                 if(typeof value == 'string'){
                     value = value.split(' ')
                 }
-                xclassUtil.debugMap[_uid] = value || []
+                xclassUtil.debugMap.set(_uid,value || [])
             }else{
-                delete xclassUtil.debugMap[_uid]
+                xclassUtil.debugMap.delete(_uid)
             }
         }
     },
     debugCollect(el,callback){
         if(xclassUtil.debug){
             let _uid = el.getAttribute('uid')
-            if(xclassUtil.debugMap[_uid]){
-                let value = xclassUtil.debugMap[_uid] || []
+            if(xclassUtil.debugMap.get(_uid)){
+                let value = xclassUtil.debugMap.get(_uid) || []
                 if(callback){
                     let result = callback(value)
-                    if(!xclassUtil.debugResultMap[_uid]){
-                        xclassUtil.debugResultMap[_uid] = []
+                    if(!xclassUtil.debugResultMap.get(_uid)){
+                        xclassUtil.debugResultMap.set(_uid,[])
                     }
                     if(result){
-                        xclassUtil.debugResultMap[_uid].push(result)
+                        xclassUtil.debugResultMap.get(_uid).push(result)
                     }
                 }
             }
@@ -324,9 +343,9 @@ const xclassUtil = {
     debugConsole(el){
         if(xclassUtil.debug){
             let _uid = el.getAttribute('uid')
-            if(xclassUtil.debugMap[_uid]){
+            if(xclassUtil.debugMap.get(_uid)){
                 console.log('测试结果',_uid,el)
-                console.log(xclassUtil.debugResultMap[_uid])
+                console.log(xclassUtil.debugResultMap.get(_uid))
             }
         }
         
