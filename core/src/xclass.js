@@ -58,17 +58,24 @@ const xclassUtil = {
         el.attributes.setNamedItem(attr)
         // el.classList.add(xclassUtil.class);
         xclassUtil.handleDebug(binding,el)
+        let startTime = new Date().getTime();
         let styles = xclassUtil.parseStyle(el)
         xclassUtil.createStyles(styles,el)
-
+        if(xclassUtil.debug){
+            console.log('生成时间',_uid,new Date().getTime() - startTime)
+        }
         var observerOptions = {
             childList: false,  // 观察目标子节点的变化，是否有添加或者删除
             attributes: true, // 观察属性变动
             subtree: false     // 观察后代节点，默认为 false
         }
         let observer = new MutationObserver(function(mutationList){
+            let startTime1 = new Date().getTime();
             let styles = xclassUtil.parseStyle(el)
             xclassUtil.createStyles(styles,el)
+            if(xclassUtil.debug){
+                console.log('生成时间-',_uid,new Date().getTime() - startTime1)
+            }
         });
         observer.observe(el, observerOptions);
         xclassUtil.observeMap[attr.nodeValue] = observer
@@ -111,15 +118,29 @@ const xclassUtil = {
         }
         xclassUtil.styleMap[_uid] = attrNames.map(e => e)
         let result = {}
-        let noPseudoAttrName = JSON.parse(JSON.stringify(attrNames))
+        let allStyleCache = attrNames.map((name,index) => {
+            let cache = xclassUtil.styleCache[name]
+            if(cache){
+                xclassUtil.debugCollect(el,function(value){
+                    if(value.length == 0){
+                        return ['规则生成缓存',name,cache]
+                    }else{
+                        if(value.includes(name)){
+                            return ['规则生成缓存',name,cache]
+                        }
+                    }
+                })
+                attrNames.splice(index,1,'')
+            }
+            return cache;
+        }).filter(e => e)
+        //排除有缓存的key
+        attrNames = attrNames.filter(e => e)
         Object.keys(xclassUtil.pseudoClassDefine).forEach(pseudoClassDefineKey => {
-            let pseudoClassDefineStyles = attrNames.filter(name => {
+            let pseudoClassDefineStyles = attrNames.filter((name,index) => {
                 let status = name.startsWith(pseudoClassDefineKey);
                 if(status){
-                    let index = noPseudoAttrName.indexOf(name)
-                    if(index > -1){
-                        noPseudoAttrName.splice(noPseudoAttrName.indexOf(name),1)
-                    }
+                    attrNames.splice(index,1,'')
                 }
                 return status;
             }).map(name => {
@@ -156,15 +177,14 @@ const xclassUtil = {
             }).flat(Infinity)
             result[pseudoClassDefineKey] = pseudoClassDefineStyles
         })
+        // 再次排除
+        attrNames = attrNames.filter(e => e);
         let allStyles = xclassUtil.rules.map(rule => {
-            let styles = noPseudoAttrName.filter(e => {
+            let styles = attrNames.filter(e => {
                 return rule[0].test(e)
             }).map(name => {
-                let style = xclassUtil.styleCache[name];
-                if(!style){
-                    style = rule[1](rule[0],name);
-                    xclassUtil.styleCache[name] = style;
-                }
+                let style = rule[1](rule[0],name);
+                xclassUtil.styleCache[name] = style;
                 xclassUtil.debugCollect(el,function(value){
                     if(value.length == 0){
                         return ['规则生成',rule[0],name,style]
@@ -178,7 +198,7 @@ const xclassUtil = {
             })
             return styles
         }).flat(Infinity)
-        result['allStyles'] = allStyles;
+        result['allStyles'] = allStyleCache.concat(allStyles);
         return result;
     },
     createStyle(styles,el,pseudoClassDefineStr = ''){
@@ -225,7 +245,6 @@ const xclassUtil = {
     },
     createStyles(styles,el){
         if(styles){
-            let _uid = el.getAttribute('uid')
             Object.keys(styles).forEach(key => {
                 try{
                     xclassUtil.createStyle(styles[key],el,xclassUtil.pseudoClassDefine[key] || '')
