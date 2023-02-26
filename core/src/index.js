@@ -1,3 +1,3 @@
-import vueXclass from "./vue-xclass";
-
-export default vueXclass
+import XClass from "./core"
+export * from './rule'
+export default XClass

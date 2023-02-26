@@ -14,7 +14,7 @@
     "vue-template-compiler": "2.6.14"
   },
   "dependencies": {
-    "@vue-xclass/core": "workspace:^0.0.1",
+    "@xclass/vue": "workspace:^1.0.0",
     "vue": "2.6.14"
   }
 }

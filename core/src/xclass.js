@@ -1,3 +1,4 @@
+//此类为重构前版本，不再维护，但是拖入vue中依然可以使用
 const xclassUtil = {
     title:'XCLASS',
     version:'1.0.0',

@@ -1,16 +1,15 @@
 {
-  "name": "vue-xclass",
+  "name": "@xclass/vue",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite playground/vue3-test",
-    "build":"vite build core"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "vite": "^4.1.0"
+  "dependencies": {
+    "@xclass/core": "workspace:^0.0.1"
   }
 }

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vue-xclass/core": "workspace:^0.0.1",
+    "@xclass/vue": "workspace:^1.0.0",
     "vue": "^3.2.45"
   },
   "devDependencies": {

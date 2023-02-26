@@ -14,15 +14,21 @@ importers:
     devDependencies:
       vite: 4.1.4
 
+  packages/xclass-vue:
+    specifiers:
+      '@xclass/core': workspace:^0.0.1
+    dependencies:
+      '@xclass/core': link:../../core
+
   playground/vue2-test:
     specifiers:
-      '@vue-xclass/core': workspace:^0.0.1
+      '@xclass/vue': workspace:^1.0.0
       vite: ^4.1.0
       vite-plugin-vue2: ^2.0.3
       vue: 2.6.14
       vue-template-compiler: 2.6.14
     dependencies:
-      '@vue-xclass/core': link:../../core
+      '@xclass/vue': link:../../packages/xclass-vue
       vue: 2.6.14
     devDependencies:
       vite: 4.1.4
@@ -32,11 +38,11 @@ importers:
   playground/vue3-test:
     specifiers:
       '@vitejs/plugin-vue': ^4.0.0
-      '@vue-xclass/core': workspace:^0.0.1
+      '@xclass/vue': workspace:^1.0.0
       vite: ^4.1.0
       vue: ^3.2.45
     dependencies:
-      '@vue-xclass/core': link:../../core
+      '@xclass/vue': link:../../packages/xclass-vue
       vue: 3.2.47
     devDependencies:
       '@vitejs/plugin-vue': 4.0.0_vite@4.1.4+vue@3.2.47

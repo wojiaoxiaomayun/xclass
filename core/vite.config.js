@@ -9,9 +9,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
-      name: 'MyLib',
+      name: 'XClass',
       // the proper extensions will be added
-      fileName: 'my-lib',
+      fileName: 'XClass',
     }
   }
 })
