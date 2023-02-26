@@ -71,7 +71,7 @@ class XClass{
         })
     }
 
-    intersectionCallback(entries){
+    intersectionCallback = (entries) => {
         entries.forEach(entry => {
             let el = entry.target
             if(entry.isIntersecting){
@@ -116,7 +116,7 @@ class XClass{
             attributes: true, // 观察属性变动
             subtree: false     // 观察后代节点，默认为 false
         }
-        let observer = new MutationObserver(function(mutationList){
+        let observer = new MutationObserver(() => {
             let startTime1 = new Date().getTime();
             let styles = this.parseStyle(el)
             this.createStyles(styles,el)
