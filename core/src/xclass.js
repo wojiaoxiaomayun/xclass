@@ -59,42 +59,20 @@ const xclassUtil = {
     intersectionCallback(entries){
         entries.forEach(entry => {
             let el = entry.target
-            let _uid = el.getAttribute('uid')
             if(entry.isIntersecting){
-                let _uid = `${xclassUtil.title}-${guid()}`;
-                let attr = document.createAttribute('uid');
-                attr.nodeValue = _uid
-                el.attributes.setNamedItem(attr)
-                // el.classList.add(xclassUtil.class);
-                xclassUtil.handleDebug(xclassUtil.elBindingMap.get(el),el)
-                let startTime = new Date().getTime();
-                let styles = xclassUtil.parseStyle(el)
-                xclassUtil.createStyles(styles,el)
-                if(xclassUtil.debug){
-                    console.log('生成时间',_uid,new Date().getTime() - startTime)
-                }
-                var observerOptions = {
-                    childList: false,  // 观察目标子节点的变化，是否有添加或者删除
-                    attributes: true, // 观察属性变动
-                    subtree: false     // 观察后代节点，默认为 false
-                }
-                let observer = new MutationObserver(function(mutationList){
-                    let startTime1 = new Date().getTime();
-                    let styles = xclassUtil.parseStyle(el)
-                    xclassUtil.createStyles(styles,el)
-                    if(xclassUtil.debug){
-                        console.log('生成时间-',_uid,new Date().getTime() - startTime1)
-                    }
-                });
-                observer.observe(el, observerOptions);
-                xclassUtil.observeMap.set(attr.nodeValue,observer)
+                xclassUtil.initNode(el)
                 xclassUtil.interSectionObserver.unobserve(el)
             }
         })
     },
     bind(el,binding){
-        xclassUtil.interSectionObserver.observe(el)
         xclassUtil.elBindingMap.set(el,binding)
+        if(binding?.modifiers?.real){
+            console.log('实时编译')
+            this.initNode(el)
+        }else{
+            xclassUtil.interSectionObserver.observe(el)
+        }
     },
     unbind(el){
         let _uid = el.getAttribute('uid')
@@ -102,6 +80,35 @@ const xclassUtil = {
             xclassUtil.observeMap.get(_uid).disconnect();
             xclassUtil.observeMap.delete(_uid)
         }
+    },
+    initNode(el){
+        let _uid = `${xclassUtil.title}-${guid()}`;
+        let attr = document.createAttribute('uid');
+        attr.nodeValue = _uid
+        el.attributes.setNamedItem(attr)
+        // el.classList.add(xclassUtil.class);
+        xclassUtil.handleDebug(xclassUtil.elBindingMap.get(el),el)
+        let startTime = new Date().getTime();
+        let styles = xclassUtil.parseStyle(el)
+        xclassUtil.createStyles(styles,el)
+        if(xclassUtil.debug){
+            console.log('生成时间',_uid,new Date().getTime() - startTime)
+        }
+        var observerOptions = {
+            childList: false,  // 观察目标子节点的变化，是否有添加或者删除
+            attributes: true, // 观察属性变动
+            subtree: false     // 观察后代节点，默认为 false
+        }
+        let observer = new MutationObserver(function(mutationList){
+            let startTime1 = new Date().getTime();
+            let styles = xclassUtil.parseStyle(el)
+            xclassUtil.createStyles(styles,el)
+            if(xclassUtil.debug){
+                console.log('生成时间-',_uid,new Date().getTime() - startTime1)
+            }
+        });
+        observer.observe(el, observerOptions);
+        xclassUtil.observeMap.set(attr.nodeValue,observer)
     },
     parseVersion(el){
         let attrs = el.attributes;

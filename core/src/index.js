@@ -1,3 +1,3 @@
-import xclass from "./xclass";
+import vueXclass from "./vue-xclass";
 
-export default xclass;
+export default vueXclass

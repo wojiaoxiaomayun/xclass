@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import xclass from '@vue-xclass/core'
+import vueXclass from '@vue-xclass/core'
 
-createApp(App).use(xclass,{
+createApp(App).use(vueXclass,{
     debug:true,
     pseudoClassDefine:{
         'hov:':':hover'
