@@ -1,4 +1,3 @@
-import XClass from "./core"
 export const rules = [
     //width
     [/^(?:size-)?(min-|max-)?([wh])-?(.+)$/,(rule,text) => {

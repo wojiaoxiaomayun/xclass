@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@xclass/vue": "workspace:^1.0.0",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "xclass-all": "workspace:^1.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
