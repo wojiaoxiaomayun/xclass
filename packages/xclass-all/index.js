@@ -4,6 +4,7 @@ const XClassAll = () => {
     let xclass = new XClass({
         rules,colors,pseudoClassDefine
     })
+    console.log(window)
     var observerOptions = {
         childList: true,
         attributes: false,

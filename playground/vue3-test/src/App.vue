@@ -12,7 +12,7 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
-  <div x-class v-for="i in 10000" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+  <div v-xclass v-for="i in 10000" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
   <!-- <div v-xclass:test.real="['hover:bg-red','hov:f-color-white']" class="w-100 h-50 bg-primary hover:bg-red hov:f-color-white">aa</div> -->
 </template>
 
