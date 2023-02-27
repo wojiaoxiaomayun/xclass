@@ -82,10 +82,7 @@ class XClass{
     }
 
     bind(el,binding){
-        this.#elBindingMap.set(el,{
-            display:window.getComputedStyle(el).display,
-            binding
-        })
+        this.#elBindingMap.set(el,binding)
         if(binding?.modifiers?.real){
             this.initNode(el)
         }else{
@@ -102,13 +99,12 @@ class XClass{
     }
 
     initNode(el){
-        el.style.display = 'none'
         let _uid = `${this.title}-${XClass.guid()}`;
         let attr = document.createAttribute('uid');
         attr.nodeValue = _uid
         el.attributes.setNamedItem(attr)
         // el.classList.add(this.class);
-        this.handleDebug(this.#elBindingMap.get(el).binding,el)
+        this.handleDebug(this.#elBindingMap.get(el),el)
         let startTime = new Date().getTime();
         let styles = this.parseStyle(el)
         this.createStyles(styles,el)
@@ -304,7 +300,6 @@ class XClass{
                 }
             })
         }
-        el.style.display = this.#elBindingMap.get(el).display
         this.debugConsole(el)
     }
 

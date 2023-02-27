@@ -4,6 +4,7 @@ import App from './App.vue'
 import xclass from '@xclass/vue'
 import XClassAll from 'xclass-all'
 
+XClassAll()
 let app = createApp(App)
 // app.use(xclass,{
 //     debug:true,
@@ -12,4 +13,3 @@ let app = createApp(App)
 //     }
 // })
 app.mount('#app')
-XClassAll()
