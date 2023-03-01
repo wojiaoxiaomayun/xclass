@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import xclass from '@xclass/vue'
+// import xclass from '@xclass/vue'
 import XClassAll from 'xclass-all'
 
 XClassAll()
