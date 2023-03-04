@@ -4,6 +4,7 @@ class XClass{
     isClearCache = true;
     cacheExpire = -1;
     pseudoClassDefine = {};
+    responsiveDefine = {};
     rules = [];
     colors = {};
     debug = false;
@@ -25,6 +26,7 @@ class XClass{
         this.isClearCache = options?.isClearCache ?? true
         this.cacheExpire = options?.cacheExpire ?? -1
         this.pseudoClassDefine = options?.pseudoClassDefine ?? {}
+        this.responsiveDefine = options?.responsiveDefine ?? {}
         this.rules = options?.rules ?? []
         this.colors = options?.colors ?? {}
         this.debug = options?.debug ?? false
@@ -159,6 +161,34 @@ class XClass{
             }
         }
         this.#styleMap.set(_uid,attrNames.map(e => e))
+        let responsiveResult = {}
+        if(Object.keys(this.responsiveDefine).length > 0){
+            Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
+                attrNames = attrNames.filter(e => e);
+                responsiveResult[this.responsiveDefine[responsiveDefineKey]] = this.parseStyleResult(
+                    el,
+                    attrNames.filter((attr,index) => {
+                        let status = attr.startsWith(responsiveDefineKey);
+                        if(status){
+                            attrNames.splice(index,1,'')
+                        }
+                        return status;
+                    }).map(name => {
+                        let key = name.replace(responsiveDefineKey,'')
+                        return key;
+                    })
+                );
+            })
+            attrNames = attrNames.filter(e => e);
+            responsiveResult[''] = this.parseStyleResult(el,attrNames);
+        }else{
+           responsiveResult[''] = this.parseStyleResult(el,attrNames);
+        }
+        console.log(responsiveResult)
+        return responsiveResult;
+    }
+
+    parseStyleResult(el,attrNames){
         let result = {}
         let allStyleCache = attrNames.map((name,index) => {
             let cache = this.#styleCache[name]
@@ -177,11 +207,11 @@ class XClass{
             return cache;
         }).filter(e => e)
         //排除有缓存的key
-        attrNames = attrNames.filter(e => e)
         Object.keys(this.pseudoClassDefine).forEach(pseudoClassDefineKey => {
             if(!result[this.pseudoClassDefine[pseudoClassDefineKey]]){
                 result[this.pseudoClassDefine[pseudoClassDefineKey]] = []
             }
+            attrNames = attrNames.filter(e => e)
             let pseudoClassDefineStyles = attrNames.filter((name,index) => {
                 let status = name.startsWith(pseudoClassDefineKey);
                 if(status){
@@ -270,22 +300,43 @@ class XClass{
         this.debugCollect(el,function(value){
             return ['最终结果',styleText]
         })
+        return {
+            selector,styleText
+        }
+    }
+
+    insertStyle(selector,styleText,newStyleText){
         let sheet = this.#styleSheet;
         if(sheet.title == this.title){
             let cssRules = sheet.cssRules;
             let flag = true;
             for(let j = 0; j < cssRules.length; j++){
                 let cssRule = cssRules.item(j);
-                if(cssRule.selectorText == selector && cssRule.cssText != styleText){
-                    XClass.deleteRule(sheet,j)
-                    XClass.insertRule(sheet,selector,styleText,j)
-                    flag = false
-                    break;
+                if(!newStyleText && cssRule.type == 1){
+                    if(cssRule.selectorText == selector && cssRule.cssText != styleText){
+                        XClass.deleteRule(sheet,j)
+                        XClass.insertRule(sheet,selector,styleText,j)
+                        flag = false
+                        break;
+                    }
+                }else if(newStyleText && cssRule.type == 4){
+                    for(let k = 0; k < cssRule.cssRules.length; k++){
+                        let innerCssRule = cssRule.cssRules.item(k);
+                        if(innerCssRule.selectorText == selector && innerCssRule.cssText != styleText){
+                            XClass.deleteRule(sheet,j)
+                            XClass.insertRule(sheet,selector,newStyleText,j)
+                            flag = false
+                            break;
+                        }
+                    }
+                    if(!flag){
+                        break;
+                    }
                 }
             }
             if(flag){
                 // doms[0].append(styleText)
-                XClass.insertRule(sheet,selector,styleText,0)
+                XClass.insertRule(sheet,selector,newStyleText || styleText,0)
             }
         }
     }
@@ -293,11 +344,19 @@ class XClass{
     createStyles(styles,el){
         if(styles){
             Object.keys(styles).forEach(key => {
-                try{
-                    this.createStyle(styles[key],el,key || '')
-                }catch(ex){
-                    console.error(ex)
-                }
+                Object.keys(styles[key]).forEach(innerKey => {
+                    try{
+                        let result = this.createStyle(styles[key][innerKey],el,innerKey || '')
+                        if(result){
+                            if(key){
+                                result['newStyleText'] = key + `{${result.styleText}}`
+                            }
+                            this.insertStyle(result.selector,result.styleText,result.newStyleText)
+                        } 
+                    }catch(ex){
+                        console.error(ex)
+                    }
+                })
             })
         }
         this.debugConsole(el)
@@ -351,11 +410,11 @@ class XClass{
     }
 
     static insertRule(sheet, selectorText, cssText, position){
-        if (sheet.insertRule) {
+        if (sheet.insertRule && cssText) {
             sheet.insertRule(cssText, position);
         }
         else
-            if (sheet.addRule) { //仅对IE有效
+            if (sheet.addRule && cssText) { //仅对IE有效
                 sheet.addRule(selectorText, cssText, position);
             }
     }
