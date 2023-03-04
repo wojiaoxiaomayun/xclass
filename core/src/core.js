@@ -5,6 +5,7 @@ class XClass{
     cacheExpire = -1;
     pseudoClassDefine = {};
     responsiveDefine = {};
+    shortDefine = {};
     rules = [];
     colors = {};
     debug = false;
@@ -27,6 +28,7 @@ class XClass{
         this.cacheExpire = options?.cacheExpire ?? -1
         this.pseudoClassDefine = options?.pseudoClassDefine ?? {}
         this.responsiveDefine = options?.responsiveDefine ?? {}
+        this.shortDefine = options?.shortDefine ?? {}
         this.rules = options?.rules ?? []
         this.colors = options?.colors ?? {}
         this.debug = options?.debug ?? false
@@ -161,6 +163,19 @@ class XClass{
             }
         }
         this.#styleMap.set(_uid,attrNames.map(e => e))
+        let newAttrNames = []
+        attrNames.forEach((name,index) => {
+            if(Object.keys(this.shortDefine).includes(name)){
+                attrNames.splice(index,1,'')
+                let shortArr = this.shortDefine[name] || []
+                if(typeof shortArr == 'string'){
+                    shortArr = shortArr.split(' ')
+                }
+                newAttrNames.push(...shortArr)
+            }
+        });
+        attrNames = attrNames.filter(e => e);
+        attrNames.push(...newAttrNames)
         let responsiveResult = {}
         if(Object.keys(this.responsiveDefine).length > 0){
             Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
@@ -285,7 +300,7 @@ class XClass{
             for(let j = 0; j < cssRules.length; j++){
                 let cssRule = cssRules.item(j);
                 if(cssRule.selectorText == selector){
-                    deleteRule(this.#styleSheet,j)
+                    XClass.deleteRule(this.#styleSheet,j)
                     break;
                 }
             }

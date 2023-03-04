@@ -156,6 +156,7 @@ export const colors = {
 export const pseudoClassDefine = {
     'hover:':':hover'
 }
+
 export const responsiveDefine = {
     'md:':'@media screen and (max-width:500px)'
 }
