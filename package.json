@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite playground/vue3-test",
-    "build":"pnpm -r --filter=./packages/* run build",
+    "build":"pnpm build-core & pnpm -r --filter=./packages/* run build",
     "build-core":"pnpm -r --filter=./core build"
   },
   "keywords": [],

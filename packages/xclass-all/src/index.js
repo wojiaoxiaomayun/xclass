@@ -39,7 +39,7 @@ const XClassAll = (options = {}) => {
         clearCache:options.clearCache
     })
     document.body.addEventListener('DOMNodeInserted',function(arg){
-        let attr = arg?.target?.attributes?.getNamedItem('x-class') || arg?.target?.attributes?.getNamedItem('x-class:test') || arg?.target?.attributes?.getNamedItem('x-class:test.real')
+        let attr = arg?.target?.attributes?.getNamedItem('xclass') || arg?.target?.attributes?.getNamedItem('xclass:test') || arg?.target?.attributes?.getNamedItem('xclass:test.real')
         if(attr){
             let value = attr.value?eval('(' + attr.value + ')'):''
             xclass.bind(arg.target,{
