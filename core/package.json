@@ -1,10 +1,10 @@
 {
-  "name": "@xclass/core",
+  "name": "xclass-core",
   "version": "0.1.0",
   "description": "",
   "type":"module",
   "main": "dist/XClass.umd.cjs",
-  "module": "./XClass.js",
+  "module": "dist/XClass.js",
   "scripts": {
     "build": "vite build"
   },

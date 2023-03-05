@@ -16,31 +16,31 @@ importers:
 
   packages/xclass-all:
     specifiers:
-      '@xclass/core': workspace:^0.1.0
+      'xclass-core': workspace:^0.1.0
       vite: ^4.1.0
     dependencies:
-      '@xclass/core': link:../../core
+      'xclass-core': link:../../core
     devDependencies:
       vite: 4.1.4
 
   packages/xclass-vue:
     specifiers:
-      '@xclass/core': workspace:^0.1.0
+      'xclass-core': workspace:^0.1.0
       vite: ^4.1.0
     dependencies:
-      '@xclass/core': link:../../core
+      'xclass-core': link:../../core
     devDependencies:
       vite: 4.1.4
 
   playground/vue2-test:
     specifiers:
-      '@xclass/vue': workspace:^0.1.0
+      'xclass-vue': workspace:^0.1.0
       vite: ^4.1.0
       vite-plugin-vue2: ^2.0.3
       vue: 2.6.14
       vue-template-compiler: 2.6.14
     dependencies:
-      '@xclass/vue': link:../../packages/xclass-vue
+      'xclass-vue': link:../../packages/xclass-vue
       vue: 2.6.14
     devDependencies:
       vite: 4.1.4
@@ -50,13 +50,13 @@ importers:
   playground/vue3-test:
     specifiers:
       '@vitejs/plugin-vue': ^4.0.0
-      '@xclass/all': workspace:^0.1.0
-      '@xclass/vue': workspace:^0.1.0
+      'xclass-all': workspace:^0.1.0
+      'xclass-vue': workspace:^0.1.0
       vite: ^4.1.0
       vue: ^3.2.45
     dependencies:
-      '@xclass/all': link:../../packages/xclass-all
-      '@xclass/vue': link:../../packages/xclass-vue
+      'xclass-all': link:../../packages/xclass-all
+      'xclass-vue': link:../../packages/xclass-vue
       vue: 3.2.47
     devDependencies:
       '@vitejs/plugin-vue': 4.0.0_vite@4.1.4+vue@3.2.47

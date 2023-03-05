@@ -1,5 +1,5 @@
-import XClass from "@xclass/core";
-import { rules,colors,pseudoClassDefine,responsiveDefine } from "@xclass/core";
+import XClass from "xclass-core";
+import { rules,colors,pseudoClassDefine,responsiveDefine } from "xclass-core";
 
 const vueXclass = {
     install(app, options) {

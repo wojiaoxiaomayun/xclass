@@ -27,15 +27,15 @@ The reason for the tool is that I am fed up with the class name, Tailwindcss and
 
 安装
 ```node
-npm install -S @xclass/vue
+npm install -S xclass-vue
 or
-npm install -S @xclass/all
+npm install -S xclass-all
 ```
 
 Vue-Example：
 
 ```javascript
-import XClassVue from '@xclass/vue'
+import XClassVue from 'xclass-vue'
 let app = createApp(App)
 app.use(XClassVue,{...options})
 ```
@@ -47,7 +47,7 @@ app.use(XClassVue,{...options})
 Native：
 
 ```javascript
-import XClassAll from '@xclass/all'
+import XClassAll from 'xclass-all'
 XClassAll({...options})
 ```
 ```html
