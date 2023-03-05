@@ -12,15 +12,15 @@ The reason for the tool is that I am fed up with the class name, Tailwindcss and
 
 ## Function introduction
 
-*[X] Support custom rule parsing style
-*[X] Support custom pseudo-class prefixes, such as hover, after
-*[X] debug mode, which supports debugging all the parsed content on a div, and debugging the parsed content of a short class.
-*[X] Cache mode. All short classes will be cached after parsing, and will be directly obtained next time. Of course, non-cache mode can also be supported, and version can also be set. Version upgrade will delete other version caches, and cache time can be set
-*[X] Custom colors, such as bg-primary, some frames used in the project, can be used directly after configuration
-*[X] Immediate processing. After setting on a div, the current rule will be parsed immediately and then the dom will be inserted
-*[X] Responsive
-*[X] Native framework support
-*[X] Custom collection class
+* [X] Support custom rule parsing style
+* [X] Support custom pseudo-class prefixes, such as hover, after
+* [X] debug mode, which supports debugging all the parsed content on a div, and debugging the parsed content of a short class.
+* [X] Cache mode. All short classes will be cached after parsing, and will be directly obtained next time. Of course, non-cache mode can also be supported, and version can also be set. Version upgrade will delete other version caches, and cache time can be set
+* [X] Custom colors, such as bg-primary, some frames used in the project, can be used directly after configuration
+* [X] Immediate processing. After setting on a div, the current rule will be parsed immediately and then the dom will be inserted
+* [X] Responsive
+* [X] Native framework support
+* [X] Custom collection class
 
 ## Use Instance
 
