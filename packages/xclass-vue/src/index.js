@@ -34,7 +34,6 @@ const vueXclass = {
             pseudoClassDefine,
             responsiveDefine,
             shortDefine:options.shortDefine,
-            renderDomNum:options.renderDomNum,
             cacheExpire:options.cacheExpire,
             version:options.version,
             debug:options.debug,
