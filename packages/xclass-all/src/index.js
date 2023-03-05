@@ -1,6 +1,7 @@
 import XClass from "@xclass/core";
 import {rules,colors,pseudoClassDefine,responsiveDefine} from "@xclass/core"
 const XClassAll = (options = {}) => {
+    let newRUles = rules;
     if(options){
         if(options.colors){
             Object.keys(options.colors).forEach(key => {
@@ -9,9 +10,9 @@ const XClassAll = (options = {}) => {
         }
         if(options.rules){
             if(options.ruleNew){
-                rules = options.rules
+                newRUles = options.rules
             }else{
-                rules.push(...options.rules)
+                newRUles.push(...options.rules)
             }
         }
         if(options.pseudoClassDefine){
@@ -26,7 +27,7 @@ const XClassAll = (options = {}) => {
         }
     }
     let xclass = new XClass({
-        rules,
+        rules:newRUles,
         colors,
         pseudoClassDefine,
         responsiveDefine,

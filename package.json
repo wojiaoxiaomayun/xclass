@@ -1,11 +1,13 @@
 {
   "name": "xclass",
   "version": "1.0.0",
+  "type":"module",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "vite playground/vue3-test",
-    "build":"vite build core"
+    "build":"pnpm -r --filter=./packages/* run build",
+    "build-core":"pnpm -r --filter=./core build"
   },
   "keywords": [],
   "author": "",

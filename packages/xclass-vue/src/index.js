@@ -1,8 +1,9 @@
 import XClass from "@xclass/core";
-import { rules,colors,pseudoClassDefine } from "@xclass/core";
+import { rules,colors,pseudoClassDefine,responsiveDefine } from "@xclass/core";
 
 const vueXclass = {
     install(app, options) {
+        let newRUles = rules;
         if(options){
             if(options.colors){
                 Object.keys(options.colors).forEach(key => {
@@ -11,9 +12,9 @@ const vueXclass = {
             }
             if(options.rules){
                 if(options.ruleNew){
-                    rules = options.rules
+                    newRUles = options.rules
                 }else{
-                    rules.push(...options.rules)
+                    newRUles.push(...options.rules)
                 }
             }
             if(options.pseudoClassDefine){
@@ -28,7 +29,7 @@ const vueXclass = {
             }
         }
         let xclass = new XClass({
-            rules,
+            rules:newRUles,
             colors,
             pseudoClassDefine,
             responsiveDefine,

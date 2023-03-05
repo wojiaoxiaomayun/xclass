@@ -1,15 +1,20 @@
 {
-  "name": "xclass-all",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@xclass/all",
+  "version": "0.1.0",
+  "type":"module",
+  "author": "xuhaoliang<1146897508@qq.com>",
+  "description": "short class online parse",
+  "main": "dist/XClassAll.umd.js",
+  "module": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "vite build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "@xclass/core": "workspace:^0.0.1"
+    "@xclass/core": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "vite": "^4.1.0"
   }
 }

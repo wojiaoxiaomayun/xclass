@@ -69,7 +69,6 @@ const xclassUtil = {
     bind(el,binding){
         xclassUtil.elBindingMap.set(el,binding)
         if(binding?.modifiers?.real){
-            console.log('实时编译')
             this.initNode(el)
         }else{
             xclassUtil.interSectionObserver.observe(el)
