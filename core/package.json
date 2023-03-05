@@ -4,7 +4,7 @@
   "description": "",
   "type":"module",
   "main": "dist/XClass.umd.cjs",
-  "module": "./src/index.js",
+  "module": "./XClass.js",
   "scripts": {
     "build": "vite build"
   },

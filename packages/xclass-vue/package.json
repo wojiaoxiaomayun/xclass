@@ -5,7 +5,7 @@
   "description": "vue plugin short class online parse",
   "type": "module",
   "main": "dist/XClassVue.umd.js",
-  "module": "./src/index.js",
+  "module": "dist/XClassVue.js",
   "scripts": {
     "build": "vite build"
   },

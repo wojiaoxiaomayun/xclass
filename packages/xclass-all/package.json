@@ -5,7 +5,7 @@
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
   "main": "dist/XClassAll.umd.js",
-  "module": "./src/index.js",
+  "module": "dist/XClassAll.js",
   "scripts": {
     "build": "vite build"
   },
