@@ -179,8 +179,11 @@ class XClass{
         let responsiveResult = {}
         if(Object.keys(this.responsiveDefine).length > 0){
             Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
+                if(!responsiveResult[this.responsiveDefine[responsiveDefineKey]]){
+                    responsiveResult[this.responsiveDefine[responsiveDefineKey]] = []
+                }
                 attrNames = attrNames.filter(e => e);
-                responsiveResult[this.responsiveDefine[responsiveDefineKey]] = this.parseStyleResult(
+                responsiveResult[this.responsiveDefine[responsiveDefineKey]].push(this.parseStyleResult(
                     el,
                     attrNames.filter((attr,index) => {
                         let status = attr.startsWith(responsiveDefineKey);
@@ -192,14 +195,13 @@ class XClass{
                         let key = name.replace(responsiveDefineKey,'')
                         return key;
                     })
-                );
+                ));
             })
             attrNames = attrNames.filter(e => e);
-            responsiveResult[''] = this.parseStyleResult(el,attrNames);
+            responsiveResult[''] = [this.parseStyleResult(el,attrNames)];
         }else{
-           responsiveResult[''] = this.parseStyleResult(el,attrNames);
+           responsiveResult[''] = [this.parseStyleResult(el,attrNames)];
         }
-        console.log(responsiveResult)
         return responsiveResult;
     }
 
@@ -356,17 +358,29 @@ class XClass{
         }
     }
 
-    createStyles(styles,el){
-        if(styles){
-            Object.keys(styles).forEach(key => {
-                Object.keys(styles[key]).forEach(innerKey => {
+    createStyles(responsiveResult,el){
+        if(responsiveResult){
+            Object.keys(responsiveResult).forEach(key => {
+                //响应式集合数据
+                let responsiveArr = responsiveResult[key]
+                //合并响应式集合内的数据
+                let result = responsiveArr.reduce((prev,curt) => {
+                    Object.keys(curt).forEach(innerKey => {
+                        if(!prev[innerKey]){
+                            prev[innerKey] = []
+                        }
+                        prev[innerKey].push(...curt[innerKey])
+                    })
+                    return prev
+                },{})
+                Object.keys(result).forEach(pseudoClassDefineStr => {
                     try{
-                        let result = this.createStyle(styles[key][innerKey],el,innerKey || '')
-                        if(result){
+                        let styleResult = this.createStyle(result[pseudoClassDefineStr],el,pseudoClassDefineStr || '')
+                        if(styleResult){
                             if(key){
-                                result['newStyleText'] = key + `{${result.styleText}}`
+                                styleResult['newStyleText'] = key + `{${styleResult.styleText}}`
                             }
-                            this.insertStyle(result.selector,result.styleText,result.newStyleText)
+                            this.insertStyle(styleResult.selector,styleResult.styleText,styleResult.newStyleText)
                         } 
                     }catch(ex){
                         console.error(ex)
