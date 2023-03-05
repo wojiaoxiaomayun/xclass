@@ -39,7 +39,7 @@ let app = createApp(App)
 app.use(XClassVue,{...options})
 ```
 ```html
-<!--Use v-xclass attr recognition,The tag of v-xclass will be parsed-->
+<!--使用 v-xclass attr 识别，v-xclass 的标签将被解析-->
 <div v-xclass class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
 ```
 
@@ -51,7 +51,7 @@ import XClassAll from '@xclass/all'
 XClassAll({...options})
 ```
 ```html
-<!--Use xclass attr recognition,The tag of xclass will be parsed-->
+<!--使用 xclass attr 识别，xclass 的标签将被解析-->
 <div xclass class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
 ```
 结果:
@@ -101,4 +101,22 @@ options配置：
     // 是否每次清除缓存
     clearCache:false
 }
+```
+
+标签后缀
+
+> test
+```html
+<!-- 开启debug模式后 -->
+<!-- 后缀包含test的将被打印，会被打印所有class解析结果 -->
+<div xclass:test class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+<!-- 后缀包含test的将被打印，仅仅打印w-100 padding-12解析结果 -->
+<div xclass:test="w-100 padding-12" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+```
+> real
+```html
+<!-- 包含real的dom，将会被立即解析，其余dom仅在视窗内才被解析 -->
+<div xclass.real class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+<!-- 可以一起使用 -->
+<div xclass:test.real="w-100 padding-12" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
 ```

@@ -104,3 +104,20 @@ options config：
 }
 ```
 
+Label suffix
+
+> test
+```html
+<!-- After enabling debug mode -->
+<!-- Suffixes containing test will be printed, and all class parsing results will be printed -->
+<div xclass:test class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+<!-- The suffix containing test will be printed, and only the W-100 padding-12 parsing result will be printed -->
+<div xclass:test="w-100 padding-12" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+```
+> real
+```html
+<!-- DOMs containing real will be parsed immediately, and the rest of the DOMs will only be parsed in the window -->
+<div xclass.real class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+<!-- Can be used together -->
+<div xclass:test.real="w-100 padding-12" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+```
