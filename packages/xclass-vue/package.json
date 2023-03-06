@@ -1,6 +1,6 @@
 {
   "name": "xclass-vue",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "vue plugin short class online parse",
   "type": "module",
@@ -12,7 +12,7 @@
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "xclass-core": "^0.1.0"
+    "xclass-core": "^0.1.1"
   },
   "devDependencies": {
     "vite": "^4.1.0"
