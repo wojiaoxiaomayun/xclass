@@ -8,6 +8,7 @@ class XClass{
     shortDefine = {};
     rules = [];
     colors = {};
+    initialRenderNum = 1000;
     debug = false;
 
 
@@ -31,6 +32,7 @@ class XClass{
         this.shortDefine = options?.shortDefine ?? {}
         this.rules = options?.rules ?? []
         this.colors = options?.colors ?? {}
+        this.initialRenderNum = options?.initialRenderNum || 1000
         this.debug = options?.debug ?? false
         this.init()
     }
@@ -42,6 +44,30 @@ class XClass{
         }else{
             XClass.removeStorages(new RegExp(`${this.title}_.*`),[cacheKey])
         }
+        const _historyWrap = function(type) {
+            const orig = history[type];
+            const e = new Event(type);
+            return function() {
+                const rv = orig.apply(this, arguments);
+                e.arguments = arguments;
+                window.dispatchEvent(e);
+                return rv;
+            };
+        };
+        history.pushState = _historyWrap('pushState');
+        history.replaceState = _historyWrap('replaceState');
+        window.addEventListener("hashchange", () => {
+            this.#elBindingMap.clear();
+        });
+        window.addEventListener('popstate', function(event) {
+            this.#elBindingMap.clear();
+        })
+        window.addEventListener('pushState', function(e) {
+            this.#elBindingMap.clear();
+        });
+        window.addEventListener('replaceState', function(e) {
+            this.#elBindingMap.clear();
+        });
         let cache = XClass.getStorage(cacheKey) || {}
         this.#styleCache = new Proxy(cache,{
             get(target,key){
@@ -87,10 +113,14 @@ class XClass{
 
     bind(el,binding){
         this.#elBindingMap.set(el,binding)
-        if(binding?.modifiers?.real){
-            this.initNode(el)
+        if(this.#elBindingMap.size > this.initialRenderNum){
+            if(binding?.modifiers?.real){
+                this.initNode(el)
+            }else{
+                this.#interSectionObserver.observe(el)
+            }
         }else{
-            this.#interSectionObserver.observe(el)
+            this.initNode(el)
         }
     }
 

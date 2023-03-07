@@ -37,7 +37,8 @@ const vueXclass = {
             cacheExpire:options.cacheExpire,
             version:options.version,
             debug:options.debug,
-            clearCache:options.clearCache
+            clearCache:options.clearCache,
+            initialRenderNum:options.initialRenderNum
         })
         if(app.version[0] == 3){
             app.directive('xclass', {

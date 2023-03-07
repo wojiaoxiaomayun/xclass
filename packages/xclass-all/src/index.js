@@ -35,7 +35,8 @@ const XClassAll = (options = {}) => {
         cacheExpire:options.cacheExpire,
         version:options.version,
         debug:options.debug,
-        clearCache:options.clearCache
+        clearCache:options.clearCache,
+        initialRenderNum:options.initialRenderNum
     })
     document.body.addEventListener('DOMNodeInserted',function(arg){
         let attr = arg?.target?.attributes?.getNamedItem('xclass') || arg?.target?.attributes?.getNamedItem('xclass:test') || arg?.target?.attributes?.getNamedItem('xclass:test.real')
