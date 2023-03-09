@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+pnpm-lock.yaml
+core/package.json
+packages/xclass-all/package.json
+packages/xclass-vue/package.json

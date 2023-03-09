@@ -2,7 +2,7 @@ import XClass from "xclass-core";
 import { rules,colors,pseudoClassDefine,responsiveDefine } from "xclass-core";
 
 const vueXclass = {
-    install(app, options) {
+    install(app, options = {}) {
         let newRUles = rules;
         if(options){
             if(options.colors){
