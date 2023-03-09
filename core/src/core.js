@@ -20,7 +20,6 @@ class XClass {
     #styleSheet = null;
     #styleCache = {};
     #elBindingMap = new Map();
-    #work;
 
 
     constructor(options = {}) {
@@ -35,7 +34,6 @@ class XClass {
         this.colors = options?.colors ?? {}
         this.initialRenderNum = options?.initialRenderNum || 1000
         this.debug = options?.debug ?? false
-        this.#work = new Worker('./work.js')
         this.init()
     }
 
