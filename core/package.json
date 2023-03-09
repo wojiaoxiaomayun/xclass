@@ -1,6 +1,6 @@
 {
   "name": "xclass-core",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
   "type":"module",
@@ -8,7 +8,7 @@
   "module": "dist/XClass.js",
   "scripts": {
     "build": "vite build",
-    "publish": "pnpm build & npm publish"
+    "pub": "pnpm build & npm publish"
   },
   "keywords": ["short-class","custom-class"],
   "license": "MIT",

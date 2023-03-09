@@ -1,6 +1,6 @@
 {
   "name": "xclass-vue",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "vue plugin short class online parse",
   "type": "module",

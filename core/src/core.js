@@ -59,13 +59,13 @@ class XClass {
         window.addEventListener("hashchange", () => {
             this.#elBindingMap.clear();
         });
-        window.addEventListener('popstate', function (event) {
+        window.addEventListener('popstate', () =>  {
             this.#elBindingMap.clear();
         })
-        window.addEventListener('pushState', function (e) {
+        window.addEventListener('pushState', () =>  {
             this.#elBindingMap.clear();
         });
-        window.addEventListener('replaceState', function (e) {
+        window.addEventListener('replaceState', () =>  {
             this.#elBindingMap.clear();
         });
         let cache = XClass.getStorage(cacheKey) || {}
