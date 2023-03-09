@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "xclass-vue": "workspace:^0.1.0",
+    "xclass-vue": "workspace:^0.1.6",
     "vue": "^3.2.45",
-    "xclass-all": "workspace:^0.1.0"
+    "xclass-all": "workspace:^0.1.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

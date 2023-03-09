@@ -13,9 +13,9 @@ import HelloWorld from './components/HelloWorld.vue'
   </div>
   <HelloWorld msg="Vite + Vue" />
   <!-- <div v-for="i in 10000" style="width:100px;padding:12px;background:red;display:flex;align-items:center;justify-content:center;">example{{i}}</div> -->
-  <!-- <div v-xclass v-for="i in 10000" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example{{i}}</div> -->
-  <div v-xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 over-hidden padding-12 hover:bg-primary md:hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
-  <div xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+  <div xclass v-for="i in 10000" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example{{i}}</div>
+  <!-- <div  v-xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 over-hidden padding-12 hover:bg-primary md:hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div> -->
+  <!-- <div xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div> -->
   <!-- <div v-xclass:test.real="['hover:bg-red','hov:f-color-white']" class="w-100 h-50 bg-primary hover:bg-red hov:f-color-white">aa</div> -->
 </template>
 

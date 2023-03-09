@@ -1,4 +1,4 @@
-class XClass{
+class XClass {
     title = 'XCLASS';
     version = '1.0.0';
     isClearCache = true;
@@ -20,9 +20,10 @@ class XClass{
     #styleSheet = null;
     #styleCache = {};
     #elBindingMap = new Map();
-    
+    #work;
 
-    constructor(options = {}){
+
+    constructor(options = {}) {
         this.title = options?.title ?? 'XCLASS'
         this.version = options?.version ?? '1.0.0'
         this.isClearCache = options?.isClearCache ?? true
@@ -34,20 +35,21 @@ class XClass{
         this.colors = options?.colors ?? {}
         this.initialRenderNum = options?.initialRenderNum || 1000
         this.debug = options?.debug ?? false
+        this.#work = new Worker('./work.js')
         this.init()
     }
 
-    init(){
+    init() {
         let cacheKey = this.title + '_' + this.version;
-        if(this.isClearCache){
+        if (this.isClearCache) {
             XClass.removeStorages(new RegExp(`${this.title}_.*`))
-        }else{
-            XClass.removeStorages(new RegExp(`${this.title}_.*`),[cacheKey])
+        } else {
+            XClass.removeStorages(new RegExp(`${this.title}_.*`), [cacheKey])
         }
-        const _historyWrap = function(type) {
+        const _historyWrap = function (type) {
             const orig = history[type];
             const e = new Event(type);
-            return function() {
+            return function () {
                 const rv = orig.apply(this, arguments);
                 e.arguments = arguments;
                 window.dispatchEvent(e);
@@ -59,28 +61,28 @@ class XClass{
         window.addEventListener("hashchange", () => {
             this.#elBindingMap.clear();
         });
-        window.addEventListener('popstate', function(event) {
+        window.addEventListener('popstate', function (event) {
             this.#elBindingMap.clear();
         })
-        window.addEventListener('pushState', function(e) {
+        window.addEventListener('pushState', function (e) {
             this.#elBindingMap.clear();
         });
-        window.addEventListener('replaceState', function(e) {
+        window.addEventListener('replaceState', function (e) {
             this.#elBindingMap.clear();
         });
         let cache = XClass.getStorage(cacheKey) || {}
-        this.#styleCache = new Proxy(cache,{
-            get(target,key){
+        this.#styleCache = new Proxy(cache, {
+            get(target, key) {
                 return target[key]
             },
-            set(target,key,value){
+            set(target, key, value) {
                 target[key] = value
-                XClass.setStorage(cacheKey,cache,this.cacheExpire)
+                XClass.setStorage(cacheKey, cache, this.cacheExpire)
                 return true;
             }
         })
         let doms = document.querySelectorAll(`style[title=${this.title}]`)
-        if(doms.length == 0){
+        if (doms.length == 0) {
             let style = document.createElement('style');
             style.type = 'text/css'
             style.title = this.title
@@ -89,61 +91,61 @@ class XClass{
             headNode.appendChild(style)
         }
         let sheets = document.styleSheets;
-        for(let i = sheets.length - 1; i >= 0; i--){
+        for (let i = sheets.length - 1; i >= 0; i--) {
             let sheet = sheets.item(i);
-            if(sheet.title == this.title){
+            if (sheet.title == this.title) {
                 this.#styleSheet = sheet;
             }
         }
         //加入视窗监视器，来保证进入视窗的元素才被渲染，大大降低了js使用率，成功避免渲染10000及更多节点卡死问题
-        this.#interSectionObserver = new IntersectionObserver(this.intersectionCallback,{
-            rootMargin:'500px 0px'
+        this.#interSectionObserver = new IntersectionObserver(this.intersectionCallback, {
+            rootMargin: '500px 0px'
         })
     }
 
     intersectionCallback = (entries) => {
         entries.forEach(entry => {
             let el = entry.target
-            if(entry.isIntersecting){
+            if (entry.isIntersecting) {
                 this.initNode(el)
                 this.#interSectionObserver.unobserve(el)
             }
         })
     }
 
-    bind(el,binding){
-        this.#elBindingMap.set(el,binding)
-        if(this.#elBindingMap.size > this.initialRenderNum){
-            if(binding?.modifiers?.real){
+    bind(el, binding) {
+        this.#elBindingMap.set(el, binding)
+        if (this.#elBindingMap.size > this.initialRenderNum) {
+            if (binding?.modifiers?.real || XClass.isInViewPort(el)) {
                 this.initNode(el)
-            }else{
+            } else {
                 this.#interSectionObserver.observe(el)
             }
-        }else{
+        } else {
             this.initNode(el)
         }
     }
 
-    unbind(el){
+    unbind(el) {
         let _uid = el.getAttribute('uid')
-        if(this.#observeMap.get(_uid)){
+        if (this.#observeMap.get(_uid)) {
             this.#observeMap.get(_uid).disconnect();
             this.#observeMap.delete(_uid)
         }
     }
 
-    initNode(el){
+    initNode(el) {
         let _uid = `${this.title}-${XClass.guid()}`;
         let attr = document.createAttribute('uid');
         attr.nodeValue = _uid
         el.attributes.setNamedItem(attr)
         // el.classList.add(this.class);
-        this.handleDebug(this.#elBindingMap.get(el),el)
+        this.handleDebug(this.#elBindingMap.get(el), el)
         let startTime = new Date().getTime();
         let styles = this.parseStyle(el)
-        this.createStyles(styles,el)
-        if(this.debug){
-            console.log('生成时间',_uid,new Date().getTime() - startTime)
+        this.createStyles(styles, el)
+        if (this.debug) {
+            console.log('生成时间', _uid, new Date().getTime() - startTime)
         }
         var observerOptions = {
             childList: false,  // 观察目标子节点的变化，是否有添加或者删除
@@ -153,19 +155,19 @@ class XClass{
         let observer = new MutationObserver(() => {
             let startTime1 = new Date().getTime();
             let styles = this.parseStyle(el)
-            this.createStyles(styles,el)
-            if(this.debug){
-                console.log('生成时间-',_uid,new Date().getTime() - startTime1)
+            this.createStyles(styles, el)
+            if (this.debug) {
+                console.log('生成时间-', _uid, new Date().getTime() - startTime1)
             }
         });
         observer.observe(el, observerOptions);
-        this.#observeMap.set(attr.nodeValue,observer)
+        this.#observeMap.set(attr.nodeValue, observer)
     }
 
-    parseVersion(el){
+    parseVersion(el) {
         let attrs = el.attributes;
         let attrArr = [];
-        for(let i = 0; i < attrs.length; i++){
+        for (let i = 0; i < attrs.length; i++) {
             attrArr.push(attrs[i])
         }
         let attrNames = attrArr.map(e => e.nodeName)
@@ -175,30 +177,30 @@ class XClass{
         return version;
     }
 
-    parseStyle(el){
+    parseStyle(el) {
         let attrs = el.attributes;
         let attrNames = []
         let classList = el.classList
         classList.forEach(item => {
             attrNames.push(item)
         })
-        for(let i = 0; i < attrs.length; i++){
+        for (let i = 0; i < attrs.length; i++) {
             attrNames.push(attrs[i].nodeName)
         }
         let _uid = el.getAttribute('uid')
         let arr = this.#styleMap.get(_uid)
-        if(arr && arr.length == attrNames.length){
-            if(arr.filter(e => !attrNames.includes(e)).length == 0){
+        if (arr && arr.length == attrNames.length) {
+            if (arr.filter(e => !attrNames.includes(e)).length == 0) {
                 return {}
             }
         }
-        this.#styleMap.set(_uid,attrNames.map(e => e))
+        this.#styleMap.set(_uid, attrNames.map(e => e))
         let newAttrNames = []
-        attrNames.forEach((name,index) => {
-            if(Object.keys(this.shortDefine).includes(name)){
-                attrNames.splice(index,1,'')
+        attrNames.forEach((name, index) => {
+            if (Object.keys(this.shortDefine).includes(name)) {
+                attrNames.splice(index, 1, '')
                 let shortArr = this.shortDefine[name] || []
-                if(typeof shortArr == 'string'){
+                if (typeof shortArr == 'string') {
                     shortArr = shortArr.split(' ')
                 }
                 newAttrNames.push(...shortArr)
@@ -207,74 +209,74 @@ class XClass{
         attrNames = attrNames.filter(e => e);
         attrNames.push(...newAttrNames)
         let responsiveResult = {}
-        if(Object.keys(this.responsiveDefine).length > 0){
+        if (Object.keys(this.responsiveDefine).length > 0) {
             Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
-                if(!responsiveResult[this.responsiveDefine[responsiveDefineKey]]){
+                if (!responsiveResult[this.responsiveDefine[responsiveDefineKey]]) {
                     responsiveResult[this.responsiveDefine[responsiveDefineKey]] = []
                 }
                 attrNames = attrNames.filter(e => e);
                 responsiveResult[this.responsiveDefine[responsiveDefineKey]].push(this.parseStyleResult(
                     el,
-                    attrNames.filter((attr,index) => {
+                    attrNames.filter((attr, index) => {
                         let status = attr.startsWith(responsiveDefineKey);
-                        if(status){
-                            attrNames.splice(index,1,'')
+                        if (status) {
+                            attrNames.splice(index, 1, '')
                         }
                         return status;
                     }).map(name => {
-                        let key = name.replace(responsiveDefineKey,'')
+                        let key = name.replace(responsiveDefineKey, '')
                         return key;
                     })
                 ));
             })
             attrNames = attrNames.filter(e => e);
-            responsiveResult[''] = [this.parseStyleResult(el,attrNames)];
-        }else{
-           responsiveResult[''] = [this.parseStyleResult(el,attrNames)];
+            responsiveResult[''] = [this.parseStyleResult(el, attrNames)];
+        } else {
+            responsiveResult[''] = [this.parseStyleResult(el, attrNames)];
         }
         return responsiveResult;
     }
 
-    parseStyleResult(el,attrNames){
+    parseStyleResult(el, attrNames) {
         let result = {}
-        let allStyleCache = attrNames.map((name,index) => {
+        let allStyleCache = attrNames.map((name, index) => {
             let cache = this.#styleCache[name]
-            if(cache){
-                this.debugCollect(el,function(value){
-                    if(value.length == 0){
-                        return ['规则生成缓存',name,cache]
-                    }else{
-                        if(value.includes(name)){
-                            return ['规则生成缓存',name,cache]
+            if (cache) {
+                this.debugCollect(el, function (value) {
+                    if (value.length == 0) {
+                        return ['规则生成缓存', name, cache]
+                    } else {
+                        if (value.includes(name)) {
+                            return ['规则生成缓存', name, cache]
                         }
                     }
                 })
-                attrNames.splice(index,1,'')
+                attrNames.splice(index, 1, '')
             }
             return cache;
         }).filter(e => e)
         //排除有缓存的key
         Object.keys(this.pseudoClassDefine).forEach(pseudoClassDefineKey => {
-            if(!result[this.pseudoClassDefine[pseudoClassDefineKey]]){
+            if (!result[this.pseudoClassDefine[pseudoClassDefineKey]]) {
                 result[this.pseudoClassDefine[pseudoClassDefineKey]] = []
             }
             attrNames = attrNames.filter(e => e)
-            let pseudoClassDefineStyles = attrNames.filter((name,index) => {
+            let pseudoClassDefineStyles = attrNames.filter((name, index) => {
                 let status = name.startsWith(pseudoClassDefineKey);
-                if(status){
-                    attrNames.splice(index,1,'')
+                if (status) {
+                    attrNames.splice(index, 1, '')
                 }
                 return status;
             }).map(name => {
-                let key = name.replace(pseudoClassDefineKey,'')
+                let key = name.replace(pseudoClassDefineKey, '')
                 let style = this.#styleCache[key];
-                if(style){
-                    this.debugCollect(el,function(value){
-                        if(value.length == 0){
-                            return ['规则生成-缓存',name,style]
-                        }else{
-                            if(value.includes(name)){
-                                return ['规则生成-缓存',name,style]
+                if (style) {
+                    this.debugCollect(el, function (value) {
+                        if (value.length == 0) {
+                            return ['规则生成-缓存', name, style]
+                        } else {
+                            if (value.includes(name)) {
+                                return ['规则生成-缓存', name, style]
                             }
                         }
                     })
@@ -283,14 +285,14 @@ class XClass{
                 return this.rules.filter(rule => {
                     return rule[0].test(key)
                 }).map(rule => {
-                    style = rule[1](rule[0],key);
+                    style = rule[1](rule[0], key);
                     this.#styleCache[key] = style;
-                    this.debugCollect(el,function(value){
-                        if(value.length == 0){
-                            return ['规则生成',rule[0],name,style]
-                        }else{
-                            if(value.includes(name)){
-                                return ['规则生成',rule[0],name,style]
+                    this.debugCollect(el, function (value) {
+                        if (value.length == 0) {
+                            return ['规则生成', rule[0], name, style]
+                        } else {
+                            if (value.includes(name)) {
+                                return ['规则生成', rule[0], name, style]
                             }
                         }
                     })
@@ -305,14 +307,14 @@ class XClass{
             let styles = attrNames.filter(e => {
                 return rule[0].test(e)
             }).map(name => {
-                let style = rule[1](rule[0],name);
+                let style = rule[1](rule[0], name);
                 this.#styleCache[name] = style;
-                this.debugCollect(el,function(value){
-                    if(value.length == 0){
-                        return ['规则生成',rule[0],name,style]
-                    }else{
-                        if(value.includes(name)){
-                            return ['规则生成',rule[0],name,style]
+                this.debugCollect(el, function (value) {
+                    if (value.length == 0) {
+                        return ['规则生成', rule[0], name, style]
+                    } else {
+                        if (value.includes(name)) {
+                            return ['规则生成', rule[0], name, style]
                         }
                     }
                 })
@@ -324,95 +326,95 @@ class XClass{
         return result;
     }
 
-    createStyle(styles,el,pseudoClassDefineStr = ''){
+    createStyle(styles, el, pseudoClassDefineStr = '') {
         let _uid = el.getAttribute('uid')
         let selector = `${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}`;
-        if(!styles || styles.length == 0){
+        if (!styles || styles.length == 0) {
             let cssRules = this.#styleSheet.cssRules;
-            for(let j = 0; j < cssRules.length; j++){
+            for (let j = 0; j < cssRules.length; j++) {
                 let cssRule = cssRules.item(j);
-                if(cssRule.selectorText == selector){
-                    XClass.deleteRule(this.#styleSheet,j)
+                if (cssRule.selectorText == selector) {
+                    XClass.deleteRule(this.#styleSheet, j)
                     break;
                 }
             }
             return;
         }
-        
-        let styleText = (styles?.length ?? 0) > 0?`
+
+        let styleText = (styles?.length ?? 0) > 0 ? `
                 ${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}{
                     ${styles.join('')}
                 }
-            `:''
-        this.debugCollect(el,function(value){
-            return ['最终结果',styleText]
+            `: ''
+        this.debugCollect(el, function (value) {
+            return ['最终结果', styleText]
         })
         return {
-            selector,styleText
+            selector, styleText
         }
     }
 
-    insertStyle(selector,styleText,newStyleText){
+    insertStyle(selector, styleText, newStyleText) {
         let sheet = this.#styleSheet;
-        if(sheet.title == this.title){
+        if (sheet.title == this.title) {
             let cssRules = sheet.cssRules;
             let flag = true;
-            for(let j = 0; j < cssRules.length; j++){
+            for (let j = 0; j < cssRules.length; j++) {
                 let cssRule = cssRules.item(j);
-                if(!newStyleText && cssRule.type == 1){
-                    if(cssRule.selectorText == selector && cssRule.cssText != styleText){
-                        XClass.deleteRule(sheet,j)
-                        XClass.insertRule(sheet,selector,styleText,j)
+                if (!newStyleText && cssRule.type == 1) {
+                    if (cssRule.selectorText == selector && cssRule.cssText != styleText) {
+                        XClass.deleteRule(sheet, j)
+                        XClass.insertRule(sheet, selector, styleText, j)
                         flag = false
                         break;
                     }
-                }else if(newStyleText && cssRule.type == 4){
-                    for(let k = 0; k < cssRule.cssRules.length; k++){
+                } else if (newStyleText && cssRule.type == 4) {
+                    for (let k = 0; k < cssRule.cssRules.length; k++) {
                         let innerCssRule = cssRule.cssRules.item(k);
-                        if(innerCssRule.selectorText == selector && innerCssRule.cssText != styleText){
-                            XClass.deleteRule(sheet,j)
-                            XClass.insertRule(sheet,selector,newStyleText,j)
+                        if (innerCssRule.selectorText == selector && innerCssRule.cssText != styleText) {
+                            XClass.deleteRule(sheet, j)
+                            XClass.insertRule(sheet, selector, newStyleText, j)
                             flag = false
                             break;
                         }
                     }
-                    if(!flag){
+                    if (!flag) {
                         break;
                     }
                 }
             }
-            if(flag){
+            if (flag) {
                 // doms[0].append(styleText)
-                XClass.insertRule(sheet,selector,newStyleText || styleText,0)
+                XClass.insertRule(sheet, selector, newStyleText || styleText, 0)
             }
         }
     }
 
-    createStyles(responsiveResult,el){
-        if(responsiveResult){
+    createStyles(responsiveResult, el) {
+        if (responsiveResult) {
             Object.keys(responsiveResult).forEach(key => {
                 //响应式集合数据
                 let responsiveArr = responsiveResult[key]
                 //合并响应式集合内的数据
-                let result = responsiveArr.reduce((prev,curt) => {
+                let result = responsiveArr.reduce((prev, curt) => {
                     Object.keys(curt).forEach(innerKey => {
-                        if(!prev[innerKey]){
+                        if (!prev[innerKey]) {
                             prev[innerKey] = []
                         }
                         prev[innerKey].push(...curt[innerKey])
                     })
                     return prev
-                },{})
+                }, {})
                 Object.keys(result).forEach(pseudoClassDefineStr => {
-                    try{
-                        let styleResult = this.createStyle(result[pseudoClassDefineStr],el,pseudoClassDefineStr || '')
-                        if(styleResult){
-                            if(key){
+                    try {
+                        let styleResult = this.createStyle(result[pseudoClassDefineStr], el, pseudoClassDefineStr || '')
+                        if (styleResult) {
+                            if (key) {
                                 styleResult['newStyleText'] = key + `{${styleResult.styleText}}`
                             }
-                            this.insertStyle(styleResult.selector,styleResult.styleText,styleResult.newStyleText)
-                        } 
-                    }catch(ex){
+                            this.insertStyle(styleResult.selector, styleResult.styleText, styleResult.newStyleText)
+                        }
+                    } catch (ex) {
                         console.error(ex)
                     }
                 })
@@ -421,34 +423,34 @@ class XClass{
         this.debugConsole(el)
     }
 
-    
 
-    handleDebug(binding,el){
-        if(this.debug){
+
+    handleDebug(binding, el) {
+        if (this.debug) {
             let _uid = el.getAttribute('uid')
-            if(binding.arg == 'test'){
+            if (binding.arg == 'test') {
                 let value = binding.value || [];
-                if(typeof value == 'string'){
+                if (typeof value == 'string') {
                     value = value.split(' ')
                 }
-                this.#debugMap.set(_uid,value || [])
-            }else{
+                this.#debugMap.set(_uid, value || [])
+            } else {
                 this.#debugMap.delete(_uid)
             }
         }
     }
 
-    debugCollect(el,callback){
-        if(this.debug){
+    debugCollect(el, callback) {
+        if (this.debug) {
             let _uid = el.getAttribute('uid')
-            if(this.#debugMap.get(_uid)){
+            if (this.#debugMap.get(_uid)) {
                 let value = this.#debugMap.get(_uid) || []
-                if(callback){
+                if (callback) {
                     let result = callback(value)
-                    if(!this.#debugResultMap.get(_uid)){
-                        this.#debugResultMap.set(_uid,[])
+                    if (!this.#debugResultMap.get(_uid)) {
+                        this.#debugResultMap.set(_uid, [])
                     }
-                    if(result){
+                    if (result) {
                         this.#debugResultMap.get(_uid).push(result)
                     }
                 }
@@ -457,18 +459,18 @@ class XClass{
         }
     }
 
-    debugConsole(el){
-        if(this.debug){
+    debugConsole(el) {
+        if (this.debug) {
             let _uid = el.getAttribute('uid')
-            if(this.#debugMap.get(_uid)){
-                console.log('测试结果',_uid,el)
+            if (this.#debugMap.get(_uid)) {
+                console.log('测试结果', _uid, el)
                 console.log(this.#debugResultMap.get(_uid))
             }
         }
-        
+
     }
 
-    static insertRule(sheet, selectorText, cssText, position){
+    static insertRule(sheet, selectorText, cssText, position) {
         if (sheet.insertRule && cssText) {
             sheet.insertRule(cssText, position);
         }
@@ -478,7 +480,7 @@ class XClass{
             }
     }
 
-    static deleteRule(sheet, index){
+    static deleteRule(sheet, index) {
         if (sheet.deleteRule) {
             sheet.deleteRule(index);
         }
@@ -500,7 +502,7 @@ class XClass{
             value: value,
             expire: expire,
             timestamp: Date.now(),
-            isForever:expire == -1
+            isForever: expire == -1
         }
         window.localStorage.setItem(key, JSON.stringify(data))
     }
@@ -523,12 +525,29 @@ class XClass{
         window.localStorage.removeItem(key)
     }
 
-    static removeStorages = (regx,exclude = []) => {
+    static removeStorages = (regx, exclude = []) => {
         Object.keys(window.localStorage).filter(e => {
             return regx.test(e) && !exclude.includes(e)
         }).forEach(key => {
             window.localStorage.removeItem(key)
         })
+    }
+
+    static isInViewPort = (element) => {
+        const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+        const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+        const {
+            top,
+            right,
+            bottom,
+            left,
+        } = element.getBoundingClientRect();
+        return (
+            top >= 0 &&
+            left >= 0 &&
+            right <= viewWidth &&
+            bottom <= viewHeight
+        );
     }
 }
 

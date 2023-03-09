@@ -11,6 +11,7 @@ app.use(XClassVue,{
     debug:true,
     pseudoClassDefine:{
         'hov:':':hover'
-    }
+    },
+    initialRenderNum:-1
 })
 app.mount('#app')
