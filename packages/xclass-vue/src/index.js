@@ -2,7 +2,7 @@ import XClass from "xclass-core";
 import { rules,colors,pseudoClassDefine,responsiveDefine } from "xclass-core";
 
 const vueXclass = {
-    install(app, options) {
+    install(app, options = {}) {
         let newRUles = rules;
         if(options){
             if(options.colors){
@@ -37,20 +37,21 @@ const vueXclass = {
             cacheExpire:options.cacheExpire,
             version:options.version,
             debug:options.debug,
-            clearCache:options.clearCache
+            clearCache:options.clearCache,
+            initialRenderNum:options.initialRenderNum
         })
         if(app.version[0] == 3){
             app.directive('xclass', {
-                beforeMount(el, binding, vnode, prevVnode) {
+                mounted(el, binding, vnode, prevVnode) {
                     xclass.bind(el,binding)
                 },
-                beforeUnmount(el, binding, vnode, prevVnode) {
+                unmounted(el, binding, vnode, prevVnode) {
                     xclass.unbind(el)
                 }
             })
         }else{
             app.directive('xclass', {
-                bind(el, binding, vnode, prevVnode) {
+                inserted(el, binding, vnode, prevVnode) {
                     xclass.bind(el,binding)
                 },
                 unbind(el, binding, vnode, prevVnode) {

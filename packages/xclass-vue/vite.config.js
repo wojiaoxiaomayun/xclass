@@ -7,6 +7,7 @@ export default defineConfig({
     'process.env':{}
   },
   build: {
+    target:'ES2015',
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
       name: 'XClassVue',

@@ -37,6 +37,7 @@ importers:
       xclass-core: workspace:^0.1.0
     dependencies:
       xclass-core: link:../../core
+      xclass-core: link:../../core
     devDependencies:
       vite: 4.1.4
 
@@ -58,13 +59,13 @@ importers:
   playground/vue3-test:
     specifiers:
       '@vitejs/plugin-vue': ^4.0.0
-      unplugin-xclass: workspace:^1.0.0
+      'xclass-all': workspace:^0.1.0
+      'xclass-vue': workspace:^0.1.0
       vite: ^4.1.0
       vue: ^3.2.45
-      xclass-all: workspace:^0.1.0
-      xclass-vue: workspace:^0.1.0
     dependencies:
-      unplugin-xclass: link:../../packages/unplugin-xclass
+      'xclass-all': link:../../packages/xclass-all
+      'xclass-vue': link:../../packages/xclass-vue
       vue: 3.2.47
       xclass-all: link:../../packages/xclass-all
       xclass-vue: link:../../packages/xclass-vue

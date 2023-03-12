@@ -1,17 +1,22 @@
 {
   "name": "xclass-core",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.5",
+  "author": "xuhaoliang<1146897508@qq.com>",
+  "description": "short class online parse",
   "type":"module",
   "main": "dist/XClass.umd.cjs",
   "module": "dist/XClass.js",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "pub": "pnpm build & npm publish"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "devDependencies": {
     "vite": "^4.1.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
