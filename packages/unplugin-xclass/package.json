@@ -1,0 +1,16 @@
+{
+  "name": "unplugin-xclass",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "unplugin": "^1.3.0",
+    "xclass-core": "workspace:^0.1.0"
+  }
+}
