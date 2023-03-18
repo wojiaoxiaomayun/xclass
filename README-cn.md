@@ -26,8 +26,6 @@
 
 安装
 ```node
-npm install -S xclass-vue
-or
 npm install -S xclass-all
 ```
 

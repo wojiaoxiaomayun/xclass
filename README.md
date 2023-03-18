@@ -27,8 +27,6 @@ The reason for the tool is that I am fed up with the class name, Tailwindcss and
 
 安装
 ```node
-npm install -S xclass-vue
-or
 npm install -S xclass-all
 ```
 
