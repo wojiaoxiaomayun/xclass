@@ -4,8 +4,8 @@
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
   "type":"module",
-  "main": "dist/XClass.umd.cjs",
-  "module": "dist/XClass.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "vite build",
     "pub": "pnpm build & npm publish"

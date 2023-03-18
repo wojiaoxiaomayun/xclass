@@ -34,7 +34,9 @@ class XClass {
         this.colors = options?.colors ?? {}
         this.initialRenderNum = options?.initialRenderNum || 1000
         this.debug = options?.debug ?? false
-        this.init()
+        if(typeof window == 'object'){
+            this.init()
+        }
     }
 
     init() {
@@ -113,6 +115,11 @@ class XClass {
 
     bind(el, binding) {
         this.#elBindingMap.set(el, binding)
+        //拥有uid，已经渲染过，直接进入节点进行监听变化即可
+        if(el.getAttribute('uid')){
+            this.initNode(el)
+            return;
+        }
         if (this.#elBindingMap.size > this.initialRenderNum) {
             if (binding?.modifiers?.real || XClass.isInViewPort(el)) {
                 this.initNode(el)
@@ -133,17 +140,22 @@ class XClass {
     }
 
     initNode(el) {
-        let _uid = `${this.title}-${XClass.guid()}`;
-        let attr = document.createAttribute('uid');
-        attr.nodeValue = _uid
-        el.attributes.setNamedItem(attr)
-        // el.classList.add(this.class);
-        this.handleDebug(this.#elBindingMap.get(el), el)
-        let startTime = new Date().getTime();
-        let styles = this.parseStyle(el)
-        this.createStyles(styles, el)
-        if (this.debug) {
-            console.log('生成时间', _uid, new Date().getTime() - startTime)
+        let _uid = el.getAttribute('uid');
+        if(_uid){
+            console.log('插件生成',_uid)
+        }
+        if(!_uid){
+            _uid = `${this.title}-${XClass.guid()}`;
+            let attr = document.createAttribute('uid');
+            attr.nodeValue = _uid
+            el.attributes.setNamedItem(attr)
+            // el.classList.add(this.class);
+            this.handleDebug(this.#elBindingMap.get(el), _uid)
+            let startTime = new Date().getTime();
+            this.parseAndCreate(el)
+            if (this.debug) {
+                console.log('生成时间', _uid, new Date().getTime() - startTime)
+            }
         }
         var observerOptions = {
             childList: false,  // 观察目标子节点的变化，是否有添加或者删除
@@ -152,29 +164,19 @@ class XClass {
         }
         let observer = new MutationObserver(() => {
             let startTime1 = new Date().getTime();
-            let styles = this.parseStyle(el)
-            this.createStyles(styles, el)
+            this.parseAndCreate(el)
             if (this.debug) {
                 console.log('生成时间-', _uid, new Date().getTime() - startTime1)
             }
         });
         observer.observe(el, observerOptions);
-        this.#observeMap.set(attr.nodeValue, observer)
+        this.#observeMap.set(_uid, observer)
     }
-
-    parseVersion(el) {
-        let attrs = el.attributes;
-        let attrArr = [];
-        for (let i = 0; i < attrs.length; i++) {
-            attrArr.push(attrs[i])
-        }
-        let attrNames = attrArr.map(e => e.nodeName)
-        let version = attrNames.filter(e => {
-            return e?.startsWith('data-v')
-        })?.[0]
-        return version;
+    parseAndCreate(el){
+        let styles = this.parseStyle(el)
+        this.createStyles(styles, el)
     }
-
+    // 解析style结果
     parseStyle(el) {
         let attrs = el.attributes;
         let attrNames = []
@@ -193,165 +195,19 @@ class XClass {
             }
         }
         this.#styleMap.set(_uid, attrNames.map(e => e))
-        let newAttrNames = []
-        attrNames.forEach((name, index) => {
-            if (Object.keys(this.shortDefine).includes(name)) {
-                attrNames.splice(index, 1, '')
-                let shortArr = this.shortDefine[name] || []
-                if (typeof shortArr == 'string') {
-                    shortArr = shortArr.split(' ')
-                }
-                newAttrNames.push(...shortArr)
-            }
-        });
-        attrNames = attrNames.filter(e => e);
-        attrNames.push(...newAttrNames)
-        let responsiveResult = {}
-        if (Object.keys(this.responsiveDefine).length > 0) {
-            Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
-                if (!responsiveResult[this.responsiveDefine[responsiveDefineKey]]) {
-                    responsiveResult[this.responsiveDefine[responsiveDefineKey]] = []
-                }
-                attrNames = attrNames.filter(e => e);
-                responsiveResult[this.responsiveDefine[responsiveDefineKey]].push(this.parseStyleResult(
-                    el,
-                    attrNames.filter((attr, index) => {
-                        let status = attr.startsWith(responsiveDefineKey);
-                        if (status) {
-                            attrNames.splice(index, 1, '')
-                        }
-                        return status;
-                    }).map(name => {
-                        let key = name.replace(responsiveDefineKey, '')
-                        return key;
-                    })
-                ));
+        return this.parseStyleNode(attrNames,_uid)
+    }
+    //将结果挂载到stylesheet上
+    createStyles(responsiveResult, el) {
+        let results = this.createStylesNode(responsiveResult,el.getAttribute('uid'),el.tagName.toLocaleLowerCase())
+        results.forEach(result => {
+            result.forEach(styleResult => {
+                this.insertStyle(styleResult.selector, styleResult.styleText, styleResult.newStyleText)
             })
-            attrNames = attrNames.filter(e => e);
-            responsiveResult[''] = [this.parseStyleResult(el, attrNames)];
-        } else {
-            responsiveResult[''] = [this.parseStyleResult(el, attrNames)];
-        }
-        return responsiveResult;
-    }
-
-    parseStyleResult(el, attrNames) {
-        let result = {}
-        let allStyleCache = attrNames.map((name, index) => {
-            let cache = this.#styleCache[name]
-            if (cache) {
-                this.debugCollect(el, function (value) {
-                    if (value.length == 0) {
-                        return ['规则生成缓存', name, cache]
-                    } else {
-                        if (value.includes(name)) {
-                            return ['规则生成缓存', name, cache]
-                        }
-                    }
-                })
-                attrNames.splice(index, 1, '')
-            }
-            return cache;
-        }).filter(e => e)
-        //排除有缓存的key
-        Object.keys(this.pseudoClassDefine).forEach(pseudoClassDefineKey => {
-            if (!result[this.pseudoClassDefine[pseudoClassDefineKey]]) {
-                result[this.pseudoClassDefine[pseudoClassDefineKey]] = []
-            }
-            attrNames = attrNames.filter(e => e)
-            let pseudoClassDefineStyles = attrNames.filter((name, index) => {
-                let status = name.startsWith(pseudoClassDefineKey);
-                if (status) {
-                    attrNames.splice(index, 1, '')
-                }
-                return status;
-            }).map(name => {
-                let key = name.replace(pseudoClassDefineKey, '')
-                let style = this.#styleCache[key];
-                if (style) {
-                    this.debugCollect(el, function (value) {
-                        if (value.length == 0) {
-                            return ['规则生成-缓存', name, style]
-                        } else {
-                            if (value.includes(name)) {
-                                return ['规则生成-缓存', name, style]
-                            }
-                        }
-                    })
-                    return [style]
-                }
-                return this.rules.filter(rule => {
-                    return rule[0].test(key)
-                }).map(rule => {
-                    style = rule[1](rule[0], key);
-                    this.#styleCache[key] = style;
-                    this.debugCollect(el, function (value) {
-                        if (value.length == 0) {
-                            return ['规则生成', rule[0], name, style]
-                        } else {
-                            if (value.includes(name)) {
-                                return ['规则生成', rule[0], name, style]
-                            }
-                        }
-                    })
-                    return style;
-                })
-            }).flat(Infinity)
-            result[this.pseudoClassDefine[pseudoClassDefineKey]].push(...pseudoClassDefineStyles)
         })
-        // 再次排除
-        attrNames = attrNames.filter(e => e);
-        let allStyles = this.rules.map(rule => {
-            let styles = attrNames.filter(e => {
-                return rule[0].test(e)
-            }).map(name => {
-                let style = rule[1](rule[0], name);
-                this.#styleCache[name] = style;
-                this.debugCollect(el, function (value) {
-                    if (value.length == 0) {
-                        return ['规则生成', rule[0], name, style]
-                    } else {
-                        if (value.includes(name)) {
-                            return ['规则生成', rule[0], name, style]
-                        }
-                    }
-                })
-                return style;
-            })
-            return styles
-        }).flat(Infinity)
-        result[''] = allStyleCache.concat(allStyles);
-        return result;
+        this.debugConsole(el)
     }
-
-    createStyle(styles, el, pseudoClassDefineStr = '') {
-        let _uid = el.getAttribute('uid')
-        let selector = `${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}`;
-        if (!styles || styles.length == 0) {
-            let cssRules = this.#styleSheet.cssRules;
-            for (let j = 0; j < cssRules.length; j++) {
-                let cssRule = cssRules.item(j);
-                if (cssRule.selectorText == selector) {
-                    XClass.deleteRule(this.#styleSheet, j)
-                    break;
-                }
-            }
-            return;
-        }
-
-        let styleText = (styles?.length ?? 0) > 0 ? `
-                ${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}{
-                    ${styles.join('')}
-                }
-            `: ''
-        this.debugCollect(el, function (value) {
-            return ['最终结果', styleText]
-        })
-        return {
-            selector, styleText
-        }
-    }
-
+    //插入stylesheet的
     insertStyle(selector, styleText, newStyleText) {
         let sheet = this.#styleSheet;
         if (sheet.title == this.title) {
@@ -387,10 +243,154 @@ class XClass {
             }
         }
     }
+    // 将得到的class或者attr解析成style
+    //先处理响应式的东西，然后交给#parseStyleResultNode来统一处理style结果
+    parseStyleNode(attrNames,_uid){
+        let newAttrNames = []
+        attrNames.forEach((name, index) => {
+            if (Object.keys(this.shortDefine).includes(name)) {
+                attrNames.splice(index, 1, '')
+                let shortArr = this.shortDefine[name] || []
+                if (typeof shortArr == 'string') {
+                    shortArr = shortArr.split(' ')
+                }
+                newAttrNames.push(...shortArr)
+            }
+        });
+        attrNames = attrNames.filter(e => e);
+        attrNames.push(...newAttrNames)
+        let responsiveResult = {}
+        if (Object.keys(this.responsiveDefine).length > 0) {
+            Object.keys(this.responsiveDefine).forEach(responsiveDefineKey => {
+                if (!responsiveResult[this.responsiveDefine[responsiveDefineKey]]) {
+                    responsiveResult[this.responsiveDefine[responsiveDefineKey]] = []
+                }
+                attrNames = attrNames.filter(e => e);
+                responsiveResult[this.responsiveDefine[responsiveDefineKey]].push(this.#parseStyleResultNode(
+                    attrNames.filter((attr, index) => {
+                        let status = attr.startsWith(responsiveDefineKey);
+                        if (status) {
+                            attrNames.splice(index, 1, '')
+                        }
+                        return status;
+                    }).map(name => {
+                        let key = name.replace(responsiveDefineKey, '')
+                        return key;
+                    }),
+                    _uid
+                ));
+            })
+            attrNames = attrNames.filter(e => e);
+            responsiveResult[''] = [this.#parseStyleResultNode(attrNames,_uid)];
+        } else {
+            responsiveResult[''] = [this.#parseStyleResultNode(attrNames,_uid)];
+        }
+        return responsiveResult;
+    }
 
-    createStyles(responsiveResult, el) {
+    #parseStyleResultNode(attrNames,_uid) {
+        let result = {}
+        let allStyleCache = attrNames.map((name, index) => {
+            let cache = this.#styleCache[name]
+            if (cache) {
+                this.debugCollect(_uid, function (value) {
+                    if (value.length == 0) {
+                        return ['规则生成缓存', name, cache]
+                    } else {
+                        if (value.includes(name)) {
+                            return ['规则生成缓存', name, cache]
+                        }
+                    }
+                })
+                attrNames.splice(index, 1, '')
+            }
+            return cache;
+        }).filter(e => e)
+        //排除有缓存的key
+        Object.keys(this.pseudoClassDefine).forEach(pseudoClassDefineKey => {
+            if (!result[this.pseudoClassDefine[pseudoClassDefineKey]]) {
+                result[this.pseudoClassDefine[pseudoClassDefineKey]] = []
+            }
+            attrNames = attrNames.filter(e => e)
+            let pseudoClassDefineStyles = attrNames.filter((name, index) => {
+                let status = name.startsWith(pseudoClassDefineKey);
+                if (status) {
+                    attrNames.splice(index, 1, '')
+                }
+                return status;
+            }).map(name => {
+                let key = name.replace(pseudoClassDefineKey, '')
+                let style = this.#styleCache[key];
+                if (style) {
+                    this.debugCollect(_uid, function (value) {
+                        if (value.length == 0) {
+                            return ['规则生成-缓存', name, style]
+                        } else {
+                            if (value.includes(name)) {
+                                return ['规则生成-缓存', name, style]
+                            }
+                        }
+                    })
+                    return [style]
+                }
+                return this.rules.filter(rule => {
+                    return rule[0].test(key)
+                }).map(rule => {
+                    style = rule[1](rule[0], key);
+                    this.#styleCache[key] = style;
+                    this.debugCollect(_uid, function (value) {
+                        if (value.length == 0) {
+                            return ['规则生成', rule[0], name, style]
+                        } else {
+                            if (value.includes(name)) {
+                                return ['规则生成', rule[0], name, style]
+                            }
+                        }
+                    })
+                    return style;
+                })
+            }).flat(Infinity)
+            result[this.pseudoClassDefine[pseudoClassDefineKey]].push(...pseudoClassDefineStyles)
+        })
+        // 再次排除
+        attrNames = attrNames.filter(e => e);
+        let allStyles = this.rules.map(rule => {
+            let styles = attrNames.filter(e => {
+                return rule[0].test(e)
+            }).map(name => {
+                let style = rule[1](rule[0], name);
+                this.#styleCache[name] = style;
+                this.debugCollect(_uid, function (value) {
+                    if (value.length == 0) {
+                        return ['规则生成', rule[0], name, style]
+                    } else {
+                        if (value.includes(name)) {
+                            return ['规则生成', rule[0], name, style]
+                        }
+                    }
+                })
+                return style;
+            })
+            return styles
+        }).flat(Infinity)
+        result[''] = allStyleCache.concat(allStyles);
+        return result;
+    }
+    //生成单个css结果
+    createStyleNode(styles, _uid,tagName, pseudoClassDefineStr = '') {
+        let styleText = (styles?.length ?? 0) > 0 ? `
+                ${tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}{
+                    ${styles.join('')}
+                }
+            `: ''
+        return styleText?{
+            styleText
+        }:undefined
+    }
+    //生成所有的css并返回生成对象
+    createStylesNode(responsiveResult,_uid,tagName) {
         if (responsiveResult) {
-            Object.keys(responsiveResult).forEach(key => {
+            return Object.keys(responsiveResult).map(key => {
                 //响应式集合数据
                 let responsiveArr = responsiveResult[key]
                 //合并响应式集合内的数据
@@ -403,29 +403,28 @@ class XClass {
                     })
                     return prev
                 }, {})
-                Object.keys(result).forEach(pseudoClassDefineStr => {
+                return Object.keys(result).map(pseudoClassDefineStr => {
                     try {
-                        let styleResult = this.createStyle(result[pseudoClassDefineStr], el, pseudoClassDefineStr || '')
+                        let styleResult = this.createStyleNode(result[pseudoClassDefineStr], _uid,tagName, pseudoClassDefineStr || '')
                         if (styleResult) {
                             if (key) {
                                 styleResult['newStyleText'] = key + `{${styleResult.styleText}}`
                             }
-                            this.insertStyle(styleResult.selector, styleResult.styleText, styleResult.newStyleText)
+                            return styleResult;
                         }
                     } catch (ex) {
                         console.error(ex)
                     }
-                })
-            })
+                    return undefined;
+                }).filter(e => e)
+            }).filter(e => e.length > 0)
         }
-        this.debugConsole(el)
+        return []
     }
 
 
-
-    handleDebug(binding, el) {
+    handleDebug(binding, _uid) {
         if (this.debug) {
-            let _uid = el.getAttribute('uid')
             if (binding.arg == 'test') {
                 let value = binding.value || [];
                 if (typeof value == 'string') {
@@ -438,9 +437,8 @@ class XClass {
         }
     }
 
-    debugCollect(el, callback) {
+    debugCollect(_uid, callback) {
         if (this.debug) {
-            let _uid = el.getAttribute('uid')
             if (this.#debugMap.get(_uid)) {
                 let value = this.#debugMap.get(_uid) || []
                 if (callback) {

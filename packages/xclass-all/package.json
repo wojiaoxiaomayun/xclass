@@ -5,7 +5,7 @@
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
   "main": "dist/XClassAll.umd.js",
-  "module": "dist/XClassAll.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "vite build",
     "pub":"vite build && npm publish"
@@ -13,7 +13,7 @@
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "xclass-core": "latest"
+    "xclass-core": "workspace:^0.1.5"
   },
   "devDependencies": {
     "vite": "^4.1.0"
