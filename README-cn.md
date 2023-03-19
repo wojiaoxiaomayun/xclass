@@ -28,21 +28,7 @@
 ```node
 npm install -S xclass-all
 ```
-
-Vue-Example：
-
-```javascript
-import XClassVue from 'xclass-vue'
-let app = createApp(App)
-app.use(XClassVue,{...options})
-```
-```html
-<!--使用 v-xclass attr 识别，v-xclass 的标签将被解析-->
-<div v-xclass class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
-```
-
-
-原生：
+例子：
 
 ```javascript
 import XClassAll from 'xclass-all'
