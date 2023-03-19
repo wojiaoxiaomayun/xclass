@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsup",
     "xbuild": "pnpm -F xclass-core build & tsup",
-    "pub": "pnpm xbuild & npm publish"
+    "pub": "pnpm xbuild & pnpm publish  --no-git-checks"
   },
   "author": "",
   "license": "ISC",

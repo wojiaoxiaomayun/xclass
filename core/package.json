@@ -8,7 +8,7 @@
   "module": "dist/XClass.js",
   "scripts": {
     "build": "vite build",
-    "pub": "pnpm build & npm publish"
+    "pub": "pnpm build & pnpm publish  --no-git-checks"
   },
   "keywords": ["short-class","custom-class"],
   "license": "MIT",

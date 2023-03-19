@@ -1,6 +1,6 @@
 {
   "name": "xclass-all",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "type":"module",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
@@ -8,13 +8,13 @@
   "module": "dist/XClassAll.js",
   "scripts": {
     "build": "vite build",
-    "pub":"pnpm xbuild && npm publish",
+    "pub":"pnpm xbuild && pnpm publish --no-git-checks",
     "xbuild":"pnpm -F xclass-core build & vite build"
   },
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "xclass-core": "workspace:^0.1.5"
+    "xclass-core": "workspace:^0.1.6"
   },
   "devDependencies": {
     "vite": "^4.1.0"

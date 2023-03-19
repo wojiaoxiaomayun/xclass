@@ -1,6 +1,6 @@
 {
   "name": "unplugin-vue-xclass",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "type": "module",
   "main": "dist/index.cjs",
@@ -8,13 +8,13 @@
   "scripts": {
     "build": "tsup",
     "xbuild": "pnpm -F xclass-core build & tsup",
-    "pub": "pnpm xbuild & npm publish"
+    "pub": "pnpm xbuild & pnpm publish --no-git-checks"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "unplugin": "^1.3.0",
-    "xclass-core": "workspace:^0.1.5"
+    "xclass-core": "workspace:^0.1.6"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
