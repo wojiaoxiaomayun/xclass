@@ -1,6 +1,6 @@
 import XClass from "xclass-core";
 import {rules,colors,pseudoClassDefine,responsiveDefine} from "xclass-core"
-const XClassAll = (options = {}) => {
+const createXclass = (options = {}) => {
     let newRUles = rules;
     if(options){
         if(options.colors){
