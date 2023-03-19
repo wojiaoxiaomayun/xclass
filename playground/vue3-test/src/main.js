@@ -1,9 +1,8 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import XClassAll from 'xclass-all'
-XClassAll({
-    debug:false
-})
+import createXclass from 'xclass-all'
+import config from './xclass.config'
+createXclass(config)
 let app = createApp(App)
 app.mount('#app')

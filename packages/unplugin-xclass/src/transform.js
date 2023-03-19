@@ -3,7 +3,10 @@ export  const  transform = (code, xclass) => {
     let matchTags = code.matchAll(/<(?!\/)([^>]*?)(xclass.*?)>/gims)
     let tags = Array.from(matchTags, tag => tag[0]);
     let styleTexts = []
-    tags.filter(tag => !tag.startsWith('<!')).forEach(tag => {
+    tags.filter(tag => {
+        let dymicClass = /:class="(.*?)"/gims.exec(tag);
+        return !tag.startsWith('<!') && (!dymicClass || dymicClass.length == 0)
+    }).forEach(tag => {
         let guid = XClass.guid();
         let tagName = /<(.*?)\s/gims.exec(tag)[1]
         let attrNamesStr = /[^\w]class="(.*?)"/gims.exec(tag)

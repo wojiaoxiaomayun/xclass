@@ -1,23 +1,20 @@
-export const rules = [
+const rules = [
     //width
-    [/^(?:size-)?(min-|max-)?([wh])-?(.+)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:size-)?(min-|max-)?([wh])-?(.+)$/,(arr,text,themes) => {
         let str = `${arr[1] || ''}${arr[2] == 'w'?'width':'height'}:${handleSize(arr[3])};`
         return str 
     }],
-    [/^(?:border-|b-)([ltrb])?-?(\d+)?-?(solid|dashed|double|none)?-?(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:border-|b-)([ltrb])?-?(\d+)?-?(solid|dashed|double|none)?-?(.*)$/,(arr,text,themes) => {
         let positionMap = {
             l:'left',
             t:'top',
             r:'right',
             b:'bottom',
         }
-        let str = `border${arr[1]?('-' + positionMap[arr[1]]):''}:${handleSize(arr[2] || 1)} ${arr[3] || 'solid'} ${handleColor(arr[4])};`
+        let str = `border${arr[1]?('-' + positionMap[arr[1]]):''}:${handleSize(arr[2] || 1)} ${arr[3] || 'solid'} ${handleColor(themes,arr[4])};`
         return str
     }],
-    [/^(inline-)?(?:flex)-?(r|c|cr|rr)?-?(wrap)?-?(gap)?-?(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(inline-)?(?:flex)-?(r|c|cr|rr)?-?(wrap)?-?(gap)?-?(.*)$/,(arr,text,themes) => {
         let str = `
             display:${arr[1] || ''}flex;
         `;
@@ -44,8 +41,7 @@ export const rules = [
         }
         return str;
     }],
-    [/^(align|justify|alignc)-(start|end|center|between|around|stretch|evenly)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(align|justify|alignc)-(start|end|center|between|around|stretch|evenly)$/,(arr,text,themes) => {
         let map = {
             align:'align-items',
             alignc:'align-content',
@@ -61,8 +57,7 @@ export const rules = [
         let str = `${map[arr[1]]}:${map[arr[2]]};`;
         return str;
     }],
-    [/^(?:overflow|o|over|flow)-(h|a|v|hidden|auto|visible)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:overflow|o|over|flow)-(h|a|v|hidden|auto|visible)$/,(arr,text,themes) => {
         let map = {
             h:'hidden',
             a:'auto',
@@ -71,12 +66,11 @@ export const rules = [
         let str = `overflow:${map[arr[1]] || arr[1]};`;
         return str;
     }],
-    [/^(?:font-|f-)?(size|weight|color)-(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:font-|f-)?(size|weight|color)-(.*)$/,(arr,text,themes) => {
         let str = ''
         if(arr[1]){
             if(arr[1] == 'color'){
-                str += `color:${handleColor(arr[2])};`
+                str += `color:${handleColor(themes,arr[2])};`
             }else{
                 str += `font-${arr[1]}:${arr[1] == 'size'?handleSize(arr[2]):arr[2]};`;
             }
@@ -85,8 +79,7 @@ export const rules = [
         }
         return str;
     }],
-    [/^(margin|padding)-([ltrb])?-?(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(margin|padding)-([ltrb])?-?(.*)$/,(arr,text,themes) => {
         let str = ''
         let positionMap = {
             l:'left',
@@ -101,13 +94,11 @@ export const rules = [
         }
         return str;
     }],
-    [/^(?:bg)-(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
-        let str = `background:${handleColor(arr[1])};`
+    [/^(?:bg)-(.*)$/,(arr,text,themes) => {
+        let str = `background:${handleColor(themes,arr[1])};`
         return str;
     }],
-    [/^(?:radius)-(tl|tr|bl|br)?-?(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:radius)-(tl|tr|bl|br)?-?(.*)$/,(arr,text,themes) => {
         let positionMap = {
             tl:'top-left',
             tr:'top-right',
@@ -122,24 +113,21 @@ export const rules = [
         }
         return str;
     }],
-    [/^(?:cursor|cur)-(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(?:cursor|cur)-(.*)$/,(arr,text,themes) => {
         let str = `cursor:${arr[1]};`;
         return str;
     }],
-    [/^(absolute|relative|fixed)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(absolute|relative|fixed)$/,(arr,text,themes) => {
         let str = `position:${arr[1]};`;
         return str;
     }],
-    [/^(left|right|top|bottom)-(.*)$/,(rule,text) => {
-        let arr = rule.exec(text)
+    [/^(left|right|top|bottom)-(.*)$/,(arr,text,themes) => {
         let str = `${arr[1]}:${handleSize(arr[2])};`;
         return str;
     }]
 ]
 
-export const colors = {
+const themes = {
     primary:'#936ee6',
     success:'#6cad24',
     warning:'#d3a52c',
@@ -153,19 +141,19 @@ export const colors = {
     'border-light':'#E4E7ED'
 }
 
-export const pseudoClassDefine = {
+const pseudoClassDefine = {
     'hover:':':hover'
 }
 
-export const responsiveDefine = {
+const responsiveDefine = {
     'md:':'@media screen and (max-width:500px)'
 }
 
-export const handleColor = (str) => {
-    return colors[str] || str || 'white'
+const handleColor = (themes,str) => {
+    return themes[str] || str || 'white'
 }
 
-export const handleSize = (str) =>{
+const handleSize = (str) =>{
     str += ''
     if(!str){
         return '14px'
@@ -178,3 +166,14 @@ export const handleSize = (str) =>{
     }
     return str.replace(/(-)?(\d+)/g,'$1$2px');
 }
+
+const preset = () => {
+    return {
+        rules,
+        themes,
+        pseudoClassDefine,
+        responsiveDefine
+    }
+}
+
+export default preset;

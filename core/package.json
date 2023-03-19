@@ -1,11 +1,11 @@
 {
   "name": "xclass-core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
   "type":"module",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "dist/XClass.umd.cjs",
+  "module": "dist/XClass.js",
   "scripts": {
     "build": "vite build",
     "pub": "pnpm build & npm publish"

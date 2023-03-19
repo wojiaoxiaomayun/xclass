@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "esnext",
+        "lib": ["es2021"],
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "noUnusedLocals": true,
+        "types": ["node"],
+        "jsx": "preserve"
+    },
+    "include": ["src", "tests", "scripts"],
+    "exclude": ["tests/fixtures"]
+}

@@ -1,44 +1,49 @@
 import XClass from "xclass-core";
-import {rules,colors,pseudoClassDefine,responsiveDefine} from "xclass-core"
-const createXclass = (options = {}) => {
-    let newRUles = rules;
-    if(options){
-        if(options.colors){
-            Object.keys(options.colors).forEach(key => {
-                colors[key] = options.colors[key]
-            })
-        }
-        if(options.rules){
-            if(options.ruleNew){
-                newRUles = options.rules
-            }else{
-                newRUles.push(...options.rules)
-            }
-        }
-        if(options.pseudoClassDefine){
-            Object.keys(options.pseudoClassDefine).forEach(key => {
-                pseudoClassDefine[key] = options.pseudoClassDefine[key]
-            })
-        }
-        if(options.responsiveDefine){
-            Object.keys(options.responsiveDefine).forEach(key => {
-                responsiveDefine[key] = options.responsiveDefine[key]
-            })
-        }
-    }
+const createXclass = (options = {
+    presets:[],
+    rules:[],
+    pseudoClassDefine:{},
+    responsiveDefine:{},
+    shortDefine:{},
+    themes:{},
+    cacheExpire:-1,
+    version:'1.0.0',
+    debug:false,
+    clearCache:true,
+    initialRenderNum:1000
+}) => {
+    let rules = Object.assign(options?.presets?.map(preset=> preset.rules || [])?.reduce((prev,curt) => {
+        prev.push(...curt)
+        return prev;
+    },[]) || [],options?.rules || []);
+    let pseudoClassDefine = Object.assign(options?.presets?.map(preset=> preset.pseudoClassDefine || {})?.reduce((prev,curt) => {
+        Object.assign(prev,curt)
+        return prev;
+    },{}) || {},options?.pseudoClassDefine || {});
+    let responsiveDefine = Object.assign(options?.presets?.map(preset=> preset.responsiveDefine || {})?.reduce((prev,curt) => {
+        Object.assign(prev,curt)
+        return prev;
+    },{}) || {},options?.responsiveDefine || {});
+    let shortDefine = Object.assign(options?.presets?.map(preset=> preset.shortDefine || {})?.reduce((prev,curt) => {
+        Object.assign(prev,curt)
+        return prev;
+    },{}) || {},options?.shortDefine || {});
+    let themes = Object.assign(options?.presets?.map(preset=> preset.themes || {})?.reduce((prev,curt) => {
+        Object.assign(prev,curt)
+        return prev;
+    },{}) || {},options?.themes || {});
     let xclass = new XClass({
-        rules:newRUles,
-        colors,
+        rules,
         pseudoClassDefine,
         responsiveDefine,
-        shortDefine:options.shortDefine,
-        cacheExpire:options.cacheExpire,
-        version:options.version,
-        debug:options.debug,
-        clearCache:options.clearCache,
-        initialRenderNum:options.initialRenderNum
+        shortDefine,
+        cacheExpire:options?.runtime?.cacheExpire,
+        version:options?.runtime?.version,
+        debug:options?.runtime?.debug,
+        clearCache:options?.runtime?.clearCache,
+        initialRenderNum:options?.runtime?.initialRenderNum
     })
-    document.body.addEventListener('DOMNodeInserted',function(arg){
+    document.addEventListener('DOMNodeInserted',function(arg){
         let attr = arg?.target?.attributes?.getNamedItem('xclass') || arg?.target?.attributes?.getNamedItem('xclass:test') || arg?.target?.attributes?.getNamedItem('xclass:test.real')
         if(attr){
             let value = attr.value?eval('(' + attr.value + ')'):''
@@ -52,4 +57,4 @@ const createXclass = (options = {}) => {
         }
     })
 }
-export default XClassAll;
+export default createXclass;

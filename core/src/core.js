@@ -7,7 +7,7 @@ class XClass {
     responsiveDefine = {};
     shortDefine = {};
     rules = [];
-    colors = {};
+    themes = {};
     initialRenderNum = 1000;
     debug = false;
 
@@ -30,8 +30,8 @@ class XClass {
         this.pseudoClassDefine = options?.pseudoClassDefine ?? {}
         this.responsiveDefine = options?.responsiveDefine ?? {}
         this.shortDefine = options?.shortDefine ?? {}
+        this.themes = options?.themes ?? {}
         this.rules = options?.rules ?? []
-        this.colors = options?.colors ?? {}
         this.initialRenderNum = options?.initialRenderNum || 1000
         this.debug = options?.debug ?? false
         if(typeof window == 'object'){
@@ -336,7 +336,7 @@ class XClass {
                 return this.rules.filter(rule => {
                     return rule[0].test(key)
                 }).map(rule => {
-                    style = rule[1](rule[0], key);
+                    style = rule[1](rule[0].exec(key), key,this.themes);
                     this.#styleCache[key] = style;
                     this.debugCollect(_uid, function (value) {
                         if (value.length == 0) {
@@ -358,7 +358,7 @@ class XClass {
             let styles = attrNames.filter(e => {
                 return rule[0].test(e)
             }).map(name => {
-                let style = rule[1](rule[0], name);
+                let style = rule[1](rule[0].exec(name),name,this.themes);
                 this.#styleCache[name] = style;
                 this.debugCollect(_uid, function (value) {
                     if (value.length == 0) {
