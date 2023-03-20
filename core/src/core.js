@@ -378,13 +378,14 @@ class XClass {
     }
     //生成单个css结果
     createStyleNode(styles, _uid,tagName, pseudoClassDefineStr = '') {
+        let selector = `${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}`;
         let styleText = (styles?.length ?? 0) > 0 ? `
-                ${tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}{
+                ${selector}{
                     ${styles.join('')}
                 }
             `: ''
         return styleText?{
-            styleText
+            selector,styleText
         }:undefined
     }
     //生成所有的css并返回生成对象
