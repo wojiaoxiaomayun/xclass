@@ -378,7 +378,7 @@ class XClass {
     }
     //生成单个css结果
     createStyleNode(styles, _uid,tagName, pseudoClassDefineStr = '') {
-        let selector = `${el.tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}`;
+        let selector = `${tagName.toLocaleLowerCase()}[uid="${_uid}"]${pseudoClassDefineStr}`;
         let styleText = (styles?.length ?? 0) > 0 ? `
                 ${selector}{
                     ${styles.join('')}
