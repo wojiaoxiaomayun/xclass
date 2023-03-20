@@ -10,12 +10,14 @@ export  const  transform = (code, xclass) => {
         let guid = XClass.guid();
         let tagName = /<(.*?)\s/gims.exec(tag)[1]
         let attrNamesStr = /[^\w]class="(.*?)"/gims.exec(tag)
-        let attrNames = (attrNamesStr[1] ?? '').split(' ')
-        let styleResult = xclass.parseStyleNode(attrNames,guid)
-        let styleText = xclass.createStylesNode(styleResult, guid, tagName)
-        styleTexts.push(styleText)
-        let newTag = tag.replace(/<(?![/|!])([^>]*?)(xclass.*?)>/gims, `<$1$2 ${'uid="' + guid + '"'}>`)
-        code = code.replace(tag, newTag)
+        if(attrNamesStr){
+            let attrNames = (attrNamesStr[1] ?? '').split(' ')
+            let styleResult = xclass.parseStyleNode(attrNames,guid)
+            let styleText = xclass.createStylesNode(styleResult, guid, tagName)
+            styleTexts.push(styleText)
+            let newTag = tag.replace(/<(?![/|!])([^>]*?)(xclass.*?)>/gims, `<$1$2 ${'uid="' + guid + '"'}>`)
+            code = code.replace(tag, newTag)
+        }
     })
     let appendStyle = styleTexts.map(styleText => {
         return styleText.map(info => {
