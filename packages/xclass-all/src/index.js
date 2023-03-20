@@ -37,6 +37,7 @@ const createXclass = (options = {
         pseudoClassDefine,
         responsiveDefine,
         shortDefine,
+        themes,
         cacheExpire:options?.runtime?.cacheExpire,
         version:options?.runtime?.version,
         debug:options?.runtime?.debug,
