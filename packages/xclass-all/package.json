@@ -1,6 +1,6 @@
 {
-  "name": "xclass-all",
-  "version": "0.1.10",
+  "name": "@xnocss/all",
+  "version": "0.0.1",
   "type":"module",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
@@ -9,12 +9,12 @@
   "scripts": {
     "build": "vite build",
     "pub":"pnpm xbuild && pnpm publish --no-git-checks",
-    "xbuild":"pnpm -F xclass-core build & vite build"
+    "xbuild":"pnpm -F @xnocss/core build & vite build"
   },
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "xclass-core": "workspace:^0.1.6"
+    "@xnocss/core": "workspace:^0.0.1"
   },
   "devDependencies": {
     "vite": "^4.1.0"

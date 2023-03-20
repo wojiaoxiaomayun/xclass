@@ -1,6 +1,6 @@
 {
-  "name": "xclass-preset-base",
-  "version": "0.0.2",
+  "name": "@xnocss/preset-base",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "main": "dist/index.cjs",
@@ -15,5 +15,9 @@
   "devDependencies": {
     "@types/node": "^18.15.3",
     "tsup": "^6.6.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

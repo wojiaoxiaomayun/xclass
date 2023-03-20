@@ -1,24 +1,28 @@
 {
-  "name": "unplugin-vue-xclass",
-  "version": "0.0.3",
+  "name": "@xnocss/unplugin-vue",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "scripts": {
     "build": "tsup",
-    "xbuild": "pnpm -F xclass-core build & tsup",
+    "xbuild": "pnpm -F @xnocss/core build & tsup",
     "pub": "pnpm xbuild & pnpm publish --no-git-checks"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "unplugin": "^1.3.0",
-    "xclass-core": "workspace:^0.1.6"
+    "unplugin": "^1.3.1",
+    "@xnocss/core": "workspace:^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
     "tsup": "^6.6.3",
     "typescript": "^4.1.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

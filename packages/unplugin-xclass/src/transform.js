@@ -1,4 +1,4 @@
-import XClass from 'xclass-core'
+import XClass from '@xnocss/core'
 export  const  transform = (code, xclass) => {
     let matchTags = code.matchAll(/<(?!\/)([^>]*?)(xclass.*?)>/gims)
     let tags = Array.from(matchTags, tag => tag[0]);

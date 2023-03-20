@@ -1,4 +1,4 @@
-import XClass from "xclass-core";
+import XClass from "@xnocss/core";
 const createXclass = (options = {
     presets:[],
     rules:[],

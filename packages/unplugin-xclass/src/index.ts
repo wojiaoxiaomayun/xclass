@@ -1,5 +1,5 @@
 import { createUnplugin } from 'unplugin'
-import XClass from 'xclass-core'
+import XClass from '@xnocss/core'
 import { transform } from './transform.js'
 export type UserOptions = {
   presets:Array<any>,

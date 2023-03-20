@@ -7,13 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "xdev": "pnpm -F xclass-core build & pnpm -F xclass-all build & vite"
+    "xdev": "pnpm -F @xnocss/core build & pnpm -F @xnocss/all build & vite"
   },
   "dependencies": {
-    "unplugin-vue-xclass": "workspace:^0.0.1",
+    "@xnocss/unplugin-vue": "workspace:^0.0.1",
     "vue": "^3.2.45",
-    "xclass-all": "workspace:^0.1.9",
-    "xclass-preset-base": "workspace:^0.0.1"
+    "@xnocss/all": "workspace:^0.0.1",
+    "@xnocss/preset-base": "workspace:^0.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

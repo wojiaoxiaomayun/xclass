@@ -27,12 +27,12 @@
 
 安装
 ```node
-npm install -S xclass-all
+npm install -S @xnocss/all
 ```
 例子：
 
 ```javascript
-import XClassAll from 'xclass-all'
+import XClassAll from '@xnocss/all'
 XClassAll({...options})
 ```
 ```html
