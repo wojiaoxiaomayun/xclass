@@ -1,16 +1,5 @@
 import XClass from "@xnocss/core";
-function initTarget(target) {
-    if (!target || target.nodeType != 1) {
-        return;
-    }
-    if (target.hasAttribute('xclass')) {
-        console.log(target)
-    }
-    let childs = Array.from(target.children)
-    childs.forEach(e => {
-        initTarget(e)
-    })
-}
+
 const createXclass = (options = {
     presets: [],
     rules: [],
@@ -56,11 +45,23 @@ const createXclass = (options = {
         clearCache: options?.runtime?.clearCache,
         initialRenderNum: options?.runtime?.initialRenderNum
     })
-    document.addEventListener('DOMNodeInserted', function (arg) {
-        let attr = arg?.target?.attributes?.getNamedItem('xclass') || arg?.target?.attributes?.getNamedItem('xclass:test') || arg?.target?.attributes?.getNamedItem('xclass:test.real')
-        if (attr) {
+    function initTarget(target) {
+        if (!target || target.nodeType != 1) {
+            return;
+        }
+        if (
+            target.hasAttribute('xclass') || target.hasAttribute('xclass:test') || target.hasAttribute('xclass:test.real') ||
+            target.hasAttribute('v-xclass') || target.hasAttribute('v-xclass:test') || target.hasAttribute('v-xclass:test.real')
+        ) {
+            console.log(target)
+            let attr = target?.attributes?.getNamedItem('xclass') || 
+                        target?.attributes?.getNamedItem('xclass:test') || 
+                        target?.attributes?.getNamedItem('xclass:test.real') || 
+                        target?.attributes?.getNamedItem('v-xclass') || 
+                        target?.attributes?.getNamedItem('v-xclass:test') || 
+                        target?.attributes?.getNamedItem('v-xclass:test.real');
             let value = attr.value ? eval('(' + attr.value + ')') : ''
-            xclass.bind(arg.target, {
+            xclass.bind(target, {
                 arg: attr.name.includes('test') ? 'test' : '',
                 value: attr.name.includes('test') ? value : '',
                 modifiers: {
@@ -68,6 +69,13 @@ const createXclass = (options = {
                 }
             })
         }
+        let childs = Array.from(target.children)
+        childs.forEach(e => {
+            initTarget(e)
+        })
+    }
+    document.addEventListener('DOMNodeInserted', function (arg) {
+        initTarget(arg?.target)
     })
 }
 export default createXclass;

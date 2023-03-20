@@ -10,10 +10,10 @@
     "xdev": "pnpm -F @xnocss/core build & pnpm -F @xnocss/all build & vite"
   },
   "dependencies": {
-    "@xnocss/unplugin-vue": "workspace:^0.0.1",
+    "@xnocss/unplugin-vue": "workspace:*",
     "vue": "^3.2.45",
-    "@xnocss/all": "workspace:^0.0.1",
-    "@xnocss/preset-base": "workspace:^0.0.1"
+    "@xnocss/all": "workspace:*",
+    "@xnocss/preset-base": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

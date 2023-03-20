@@ -1,6 +1,6 @@
 {
   "name": "@xnocss/vue",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "vue plugin short class online parse",
   "type": "module",
@@ -8,12 +8,13 @@
   "module": "dist/XClassVue.js",
   "scripts": {
     "build": "vite build",
-    "pub":"vite build && pnpm publish --no-git-checks"
+    "pub":"pnpm xbuild && pnpm publish --no-git-checks",
+    "xbuild":"pnpm -F @xnocss/core build & vite build"
   },
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "@xnocss/core": "latest"
+    "@xnocss/core": "workspace:*"
   },
   "devDependencies": {
     "vite": "^4.1.0"

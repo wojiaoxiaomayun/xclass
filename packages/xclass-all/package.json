@@ -1,6 +1,6 @@
 {
   "name": "@xnocss/all",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type":"module",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "short class online parse",
@@ -14,7 +14,7 @@
   "keywords": ["short-class","custom-class"],
   "license": "MIT",
   "dependencies": {
-    "@xnocss/core": "workspace:^0.0.1"
+    "@xnocss/core": "workspace:*"
   },
   "devDependencies": {
     "vite": "^4.1.0"

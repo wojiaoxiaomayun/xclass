@@ -1,5 +1,7 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+const flag = ref(true)
 </script>
 
 <template>
@@ -14,9 +16,10 @@ import HelloWorld from './components/HelloWorld.vue'
   <HelloWorld msg="Vite + Vue" />
   <!-- <div v-for="i in 10000" style="width:100px;padding:12px;background:red;display:flex;align-items:center;justify-content:center;">example{{i}}</div> -->
   <!-- <div xclass v-for="i in 10000" class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example{{i}}</div> -->
-  <div  xclass:test.real="['w-100','hover:f-color-white']" 
+  <div @click="flag = !flag" xclass:test.real="['w-100','hover:f-color-white']" 
   class="w-100 over-hidden padding-12 hover:bg-primary md:hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
-  <div xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+  <div v-if="flag" xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 padding-12 bg-primary hover:bg-warning hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
+  <div v-else xclass:test.real="['w-100','hover:f-color-white']"  class="w-100 padding-12 bg-primary hover:bg-red hover:f-color-white flex align-center justify-center radius-50 cursor-pointer">example</div>
   <!-- <div 
   xclass:test.real="['hover:bg-red','hov:f-color-white']" class="w-100 h-50 bg-primary hover:bg-red">aa</div> -->
 </template>
