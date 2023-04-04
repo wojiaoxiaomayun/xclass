@@ -1,6 +1,6 @@
 {
   "name": "@xnocss/vue",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "xuhaoliang<1146897508@qq.com>",
   "description": "vue plugin short class online parse",
   "type": "module",
