@@ -116,7 +116,7 @@ class XClass {
     bind(el, binding) {
         this.#elBindingMap.set(el, binding)
         //拥有uid，已经渲染过，直接进入节点进行监听变化即可
-        if(el.getAttribute('uid')){
+        if(el.getAttribute('guid')){
             this.initNode(el)
             return;
         }

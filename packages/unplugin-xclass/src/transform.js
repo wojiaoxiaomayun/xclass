@@ -15,7 +15,7 @@ export  const  transform = (code, xclass) => {
             let styleResult = xclass.parseStyleNode(attrNames,guid)
             let styleText = xclass.createStylesNode(styleResult, guid, tagName)
             styleTexts.push(styleText)
-            let newTag = tag.replace(/<(?![/|!])([^>]*?)(xclass.*?)>/gims, `<$1$2 ${'uid="' + guid + '"'}>`)
+            let newTag = tag.replace(/<(?![/|!])([^>]*?)(xclass.*?)>/gims, `<$1$2 ${'guid="' + guid + '"'}>`)
             code = code.replace(tag, newTag)
         }
     })
