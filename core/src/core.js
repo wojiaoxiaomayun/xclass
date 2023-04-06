@@ -140,7 +140,7 @@ class XClass {
     }
 
     initNode(el) {
-        let _uid = el.getAttribute('uid');
+        let _uid = el.getAttribute('guid');
         if(_uid){
             console.log('插件生成',_uid)
         }
@@ -471,10 +471,11 @@ class XClass {
         if (sheet.insertRule && cssText) {
             sheet.insertRule(cssText, position);
         }
-        else
+        else{
             if (sheet.addRule && cssText) { //仅对IE有效
                 sheet.addRule(selectorText, cssText, position);
             }
+        }
     }
 
     static deleteRule(sheet, index) {

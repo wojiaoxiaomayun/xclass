@@ -53,7 +53,6 @@ const createXclass = (options = {
             target.hasAttribute('xclass') || target.hasAttribute('xclass:test') || target.hasAttribute('xclass:test.real') ||
             target.hasAttribute('v-xclass') || target.hasAttribute('v-xclass:test') || target.hasAttribute('v-xclass:test.real')
         ) {
-            console.log(target)
             let attr = target?.attributes?.getNamedItem('xclass') || 
                         target?.attributes?.getNamedItem('xclass:test') || 
                         target?.attributes?.getNamedItem('xclass:test.real') || 
